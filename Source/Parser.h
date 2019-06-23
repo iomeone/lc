@@ -64,14 +64,19 @@
 //    };
 //} ;
 
+inline void msg(String s)
+{
+    AlertWindow::showMessageBox(AlertWindow::AlertIconType::InfoIcon, "msg", s, "ok");
+}
+
 struct TNil {int x;};
 struct TInt
 {
     TInt(int v)
     {
-        val = v;
+        _val = v;
     }
-    int val;
+    int _val;
     
 };
 
@@ -177,29 +182,37 @@ public:
     }
     TObj ListReader( )
     {
+        std::list<TObj> lst;
         while(true)
         {
             eat_whitespace();
-            std::list<TObj> lst;
+           
             char c;
             if(read(c))
             {
+//                msg(String::charToString(c));
                 if(c == ')')
                 {
+//                    msg("find )");
                     TObj acc = Nil();
                 
                     for_each(lst.begin(), lst.end(), [this, &acc](TObj o)
-                    {
-                        acc = this->Cons(o , acc);
-                        return acc;
-                    });
+                                                                {
+                                                                    // msg("for_each ");
+                                                                    acc = this->Cons(o , acc);
+                                                                });
+                    
+                    return acc;
                 }
-                
-                unread();
-                lst.push_front(readObj());
+                else
+                {
+                    unread();
+                    lst.push_front(readObj());
+                }
             }
             else
             {
+//                 msg("expected ')'");
                 char errorInfo[256];
                 sprintf(errorInfo, "expected ')', line: %ld coloum: %ld", _line, _col);
                 throw std::runtime_error(errorInfo);
@@ -257,11 +270,15 @@ public:
         return (new TSymbol(acc));
     }
     
-    std::function<TObj(Lan&)> getHander(char c)
+    std::function<TObj()> getHander(char c)
     {
        if( c == '(')
        {
-           std::function<TObj(Lan&)> p1 = &Lan::ListReader;
+           std::function<TObj()> p1 = [this]()
+           {
+               return this->ListReader();
+           };
+          
            return p1;
        }
        else if( c == ')')
@@ -282,9 +299,13 @@ public:
         char c;
         if(read(c))
         {
-            if(auto fun = getHander(c))
+            std::function<TObj()> fun = getHander(c);
+            if(fun)
             {
-                fun(*this);
+//                msg("call fun");
+                TObj r = fun();
+//                msg("call fun end");
+                return r;
             }
             else if(isdigit(c) || c == '-')
             {
@@ -312,22 +333,27 @@ public:
     {
         obj.match( [&str]  (TNil* a)
                    {
-                       str += "Nil";
+                       str += " Nil";
                        
                    }
                    ,[&str]  (TInt* e)
                    {
-                       str += "TInt";
+                       str += " Int: " + String(e->_val);
                        
                    }
                    ,[&str]  (TSymbol* e)
                    {
-                       str += "TSymbol";
+                       str += "\nTSymbol: " + String(e->_sym);
+                   
                        
                    }
-                   ,[&str]  (TCons* e)
+                   ,[&str, this]  (TCons* e)
                    {
-                       str += "TCons";
+                       str += "( ";
+                       getASTStr(e->_head, str);
+                       getASTStr(e->_tail, str);
+                       
+                       str += " )";
                    }
                    
                    
