@@ -124,6 +124,20 @@
 			path = System/Library/Frameworks/AudioToolbox.framework;
 			sourceTree = SDKROOT;
 		};
+		091497264535DB14128523A7 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = "variant_cast.hpp";
+			path = "../../Source/mapbox/variant_cast.hpp";
+			sourceTree = "SOURCE_ROOT";
+		};
+		15FE57AD0077C0C980DAA29F = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = optional.hpp;
+			path = ../../Source/mapbox/optional.hpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		17D27A9BE2F1B1C95B9108CD = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -165,6 +179,13 @@
 			name = CoreAudio.framework;
 			path = System/Library/Frameworks/CoreAudio.framework;
 			sourceTree = SDKROOT;
+		};
+		31B385BEB4C07D3258210FC3 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = "variant_io.hpp";
+			path = "../../Source/mapbox/variant_io.hpp";
+			sourceTree = "SOURCE_ROOT";
 		};
 		32A01990309183D3DDB81F6A = {
 			isa = PBXFileReference;
@@ -243,6 +264,13 @@
 			path = System/Library/Frameworks/Accelerate.framework;
 			sourceTree = SDKROOT;
 		};
+		7FC5185B0D11D6BEECB1FFF8 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = variant.hpp;
+			path = ../../Source/mapbox/variant.hpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		84E2E4E69855F71218068E0F = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -299,6 +327,13 @@
 			path = ../../JuceLibraryCode/AppConfig.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		A5A741FED9403276A420E98D = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = "recursive_wrapper.hpp";
+			path = "../../Source/mapbox/recursive_wrapper.hpp";
+			sourceTree = "SOURCE_ROOT";
+		};
 		A944E7489E67365CF501704E = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -311,6 +346,13 @@
 			lastKnownFileType = file;
 			name = "juce_core";
 			path = "../../JuceLibraryCode/modules/juce_core";
+			sourceTree = "SOURCE_ROOT";
+		};
+		B49266F9C7775BFF8DE9BB39 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = "variant_visitor.hpp";
+			path = "../../Source/mapbox/variant_visitor.hpp";
 			sourceTree = "SOURCE_ROOT";
 		};
 		B852665BB0E5113CB4D85361 = {
@@ -439,6 +481,19 @@
 			path = "../../JuceLibraryCode/modules/juce_events";
 			sourceTree = "SOURCE_ROOT";
 		};
+		83F450BDE96D511162BE78BA = {
+			isa = PBXGroup;
+			children = (
+				15FE57AD0077C0C980DAA29F,
+				A5A741FED9403276A420E98D,
+				7FC5185B0D11D6BEECB1FFF8,
+				091497264535DB14128523A7,
+				31B385BEB4C07D3258210FC3,
+				B49266F9C7775BFF8DE9BB39,
+			);
+			name = mapbox;
+			sourceTree = "<group>";
+		};
 		195FBEE19849D8944B8208A3 = {
 			isa = PBXGroup;
 			children = (
@@ -460,6 +515,7 @@
 		9932C1885D1B3203DAAB7A8D = {
 			isa = PBXGroup;
 			children = (
+				83F450BDE96D511162BE78BA,
 				195FBEE19849D8944B8208A3,
 				137B2963394F5BA6FED861D9,
 				F2AB622C89483FE06E96F971,
@@ -600,6 +656,7 @@
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CPLUSPLUSFLAGS = "-I../../source";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.lc;
 				PRODUCT_NAME = "lc";
 				USE_HEADERMAP = NO;
@@ -644,6 +701,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CPLUSPLUSFLAGS = "-I../../source";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.lc;
 				PRODUCT_NAME = "lc";
 				USE_HEADERMAP = NO;

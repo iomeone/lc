@@ -74,6 +74,7 @@
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/I&quot;./../../source&quot; %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
@@ -115,6 +116,7 @@
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/I&quot;./../../source&quot; %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
@@ -1848,6 +1850,12 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_opengl.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\mapbox\optional.hpp"/>
+    <ClInclude Include="..\..\Source\mapbox\recursive_wrapper.hpp"/>
+    <ClInclude Include="..\..\Source\mapbox\variant.hpp"/>
+    <ClInclude Include="..\..\Source\mapbox\variant_cast.hpp"/>
+    <ClInclude Include="..\..\Source\mapbox\variant_io.hpp"/>
+    <ClInclude Include="..\..\Source\mapbox\variant_visitor.hpp"/>
     <ClInclude Include="..\..\Source\LogComponent.h"/>
     <ClInclude Include="..\..\Source\Parser.h"/>
     <ClInclude Include="..\..\Source\MainComponent.h"/>

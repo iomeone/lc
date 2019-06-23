@@ -2,6 +2,9 @@
 
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="lc\Source\mapbox">
+      <UniqueIdentifier>{3A962E8A-D796-0568-DD16-5D73E8658AF2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="lc\Source\LogComponent">
       <UniqueIdentifier>{BF64EE0E-E605-D2A6-4EE6-8A120842F555}</UniqueIdentifier>
     </Filter>
@@ -2247,6 +2250,24 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\mapbox\optional.hpp">
+      <Filter>lc\Source\mapbox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\mapbox\recursive_wrapper.hpp">
+      <Filter>lc\Source\mapbox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\mapbox\variant.hpp">
+      <Filter>lc\Source\mapbox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\mapbox\variant_cast.hpp">
+      <Filter>lc\Source\mapbox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\mapbox\variant_io.hpp">
+      <Filter>lc\Source\mapbox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\mapbox\variant_visitor.hpp">
+      <Filter>lc\Source\mapbox</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\LogComponent.h">
       <Filter>lc\Source\LogComponent</Filter>
     </ClInclude>
