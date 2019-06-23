@@ -3,6 +3,15 @@
 <JUCERPROJECT id="WDtQuB" name="lc" projectType="guiapp" jucerVersion="5.4.3">
   <MAINGROUP id="L1XPcu" name="lc">
     <GROUP id="{B5107477-1742-603C-2EE8-EFEE79DECFA8}" name="Source">
+      <GROUP id="{C80166C1-841A-943A-1E68-AAA080DD0056}" name="LogComponent">
+        <FILE id="K9WCAz" name="LogComponent.cpp" compile="1" resource="0"
+              file="Source/LogComponent.cpp"/>
+        <FILE id="Q9HEP2" name="LogComponent.h" compile="0" resource="0" file="Source/LogComponent.h"/>
+      </GROUP>
+      <GROUP id="{5A437047-39BD-F204-DD5C-85B28C7CAC85}" name="Parser">
+        <FILE id="Nt63Xm" name="Parser.cpp" compile="1" resource="0" file="Source/Parser.cpp"/>
+        <FILE id="JSsOWd" name="Parser.h" compile="0" resource="0" file="Source/Parser.h"/>
+      </GROUP>
       <FILE id="HPGaLk" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
       <FILE id="eQb37C" name="MainComponent.cpp" compile="1" resource="0"
             file="Source/MainComponent.cpp"/>
