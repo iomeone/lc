@@ -85,7 +85,7 @@ void LogComponent::resized()
     //[/UserPreResize]
 
     //[UserResized] Add your own custom resize handling here..
-
+    textEditor->setBounds(getLocalBounds());
     //[/UserResized]
 }
 

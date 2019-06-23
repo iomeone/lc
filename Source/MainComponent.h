@@ -26,10 +26,11 @@ public:
     void paint (Graphics&) override;
     void resized() override;
 
+    std::unique_ptr<Component>  _logWin;
 private:
     //==============================================================================
     // Your private member variables go here...
-
+    
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

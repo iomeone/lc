@@ -7,11 +7,16 @@
 */
 
 #include "MainComponent.h"
-
+#include "LogComponent.h"
 //==============================================================================
 MainComponent::MainComponent()
 {
-    setSize (600, 400);
+    _logWin.reset (new LogComponent());
+    addAndMakeVisible(_logWin.get());
+    
+    
+    
+     setSize (1200, 800);
 }
 
 MainComponent::~MainComponent()
@@ -34,4 +39,9 @@ void MainComponent::resized()
     // This is called when the MainComponent is resized.
     // If you add any child components, this is where you should
     // update their positions.
+    Rectangle<int> r = getLocalBounds();
+    
+    if(_logWin.get())
+        _logWin->setBounds(r.removeFromBottom(roundToInt(proportionOfWidth(0.2000f))));
+    
 }
