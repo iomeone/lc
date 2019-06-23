@@ -1,0 +1,20 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2017
+
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lc - App", "lc_App.vcxproj", "{6284A65C-B0DB-0A1B-6B4A-3B5398E74FDF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6284A65C-B0DB-0A1B-6B4A-3B5398E74FDF}.Debug|x64.ActiveCfg = Debug|x64
+		{6284A65C-B0DB-0A1B-6B4A-3B5398E74FDF}.Debug|x64.Build.0 = Debug|x64
+		{6284A65C-B0DB-0A1B-6B4A-3B5398E74FDF}.Release|x64.ActiveCfg = Release|x64
+		{6284A65C-B0DB-0A1B-6B4A-3B5398E74FDF}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
