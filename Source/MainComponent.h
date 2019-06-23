@@ -16,6 +16,7 @@
     your controls and content.
 */
 class MainComponent   : public Component
+                        ,public TextEditor::Listener
 {
 public:
     //==============================================================================
@@ -25,8 +26,12 @@ public:
     //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
+    
+    virtual void textEditorTextChanged (TextEditor&) override;
 
     std::unique_ptr<Component>  _logWin;
+    
+    std::unique_ptr<Component>  _EditorWin;
 private:
     //==============================================================================
     // Your private member variables go here...

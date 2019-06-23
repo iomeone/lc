@@ -64,7 +64,7 @@
 //    };
 //} ;
 
-struct TNil {};
+struct TNil {int x;};
 struct TInt
 {
     TInt(int v)
@@ -100,15 +100,12 @@ struct TCons
 
 
 class Lan{
-    
-    
 public:
     Lan(const String &src)
     {
         _src = src;
         _srcbuf = _src.getCharPointer().getAddress();
         _srcbufLen = strlen(_srcbuf);
-        _srcbufLen = 0;
     }
     
 
@@ -157,7 +154,11 @@ public:
                 if(is_whitespace(ch))
                     continue;
                 else
+                {
                     unread();
+                    break;
+                }
+                
             }
             else
                 break;
@@ -298,11 +299,27 @@ public:
         return nullptr;
     }
     
-    bool compile( )
+    TObj* compile( )
     {
         TObj * obj = readObj();
         
-        return true;
+        return obj;
+    }
+    
+    
+    void getASTStr(TObj * obj, String& str)
+    {
+        obj->match( []  (TNil a)  {    }
+                   ,[]  (TInt e)  {    }
+                   ,[]  (TSymbol e)  {    }
+                   ,[]  (TCons e)  {    }
+                   
+                   
+                   
+                   
+                   );//str += "Nil";
+                   
+                   
     }
     
     
@@ -319,4 +336,15 @@ protected:
 private:
     String _src;
     
+};
+
+struct calculator
+{
+public:
+    int operator()(TNil value) const
+    {
+        return 1;
+    }
+    
+ 
 };

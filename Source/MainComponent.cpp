@@ -8,14 +8,22 @@
 
 #include "MainComponent.h"
 #include "LogComponent.h"
+#include "Parser.h"
 //==============================================================================
 MainComponent::MainComponent()
 {
     _logWin.reset (new LogComponent());
     addAndMakeVisible(_logWin.get());
     
+    _EditorWin.reset (new LogComponent());
+    addAndMakeVisible(_EditorWin.get());
     
+    auto e = dynamic_cast<LogComponent*>(_EditorWin.get());
     
+    if(e)
+    {
+        e->getEditor()->addListener(this);
+    }
      setSize (1200, 800);
 }
 
@@ -41,7 +49,28 @@ void MainComponent::resized()
     // update their positions.
     Rectangle<int> r = getLocalBounds();
     
-    if(_logWin.get())
-        _logWin->setBounds(r.removeFromBottom(roundToInt(proportionOfWidth(0.2000f))));
+
+    _logWin->setBounds(r.removeFromBottom(roundToInt(proportionOfWidth(0.2000f))));
     
+    _EditorWin->setBounds(r.removeFromTop(roundToInt(proportionOfWidth(0.8000f))));
+    
+   
 }
+
+void MainComponent::textEditorTextChanged(juce::TextEditor & e) { 
+    
+    auto edtLog = dynamic_cast<LogComponent*>(_logWin.get());
+    try
+    {
+        String src = e.getText();
+        Lan lan(src);
+        lan.compile();
+        edtLog->getEditor()->setText("Success!");
+    }
+    catch (std::runtime_error& e)
+    {
+        if(edtLog)
+            edtLog->getEditor()->setText(e.what());
+    }
+}
+

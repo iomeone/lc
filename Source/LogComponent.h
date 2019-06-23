@@ -42,6 +42,10 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    TextEditor * getEditor()
+    {
+        return textEditor.get();
+    }
     //[/UserMethods]
 
     void paint (Graphics& g) override;
