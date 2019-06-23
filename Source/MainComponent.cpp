@@ -64,8 +64,16 @@ void MainComponent::textEditorTextChanged(juce::TextEditor & e) {
     {
         String src = e.getText();
         Lan lan(src);
-        lan.compile();
-        edtLog->getEditor()->setText("Success!");
+        TObj o = lan.compile();
+
+ 
+            String s;
+            lan.getASTStr(o, s);
+            edtLog->getEditor()->setText(s);
+
+
+ 
+
     }
     catch (std::runtime_error& e)
     {

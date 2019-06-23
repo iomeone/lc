@@ -10,7 +10,7 @@
   ==============================================================================
 */
 
-#include "../JuceLibraryCode/JuceHeader.h"
+
 #include "Parser.h"
 
 

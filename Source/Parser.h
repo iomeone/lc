@@ -18,7 +18,7 @@
 #include <exception>
 
 #include <mapbox/variant.hpp>
-
+#include "../JuceLibraryCode/JuceHeader.h"
 //// The object type
 //class Obj {
 //public:
@@ -85,17 +85,17 @@ struct TSymbol
 };
 struct TCons;
 
-using TObj = mapbox::util::variant<TNil, TInt, mapbox::util::recursive_wrapper<TCons>>;
+using TObj = mapbox::util::variant<TNil*, TInt*, TSymbol*, mapbox::util::recursive_wrapper<TCons*>>;
 
 struct TCons
 {
-    TCons(TObj * h, TObj* t)
+    TCons(TObj h, TObj t)
     {
         _head = h;
         _tail = t;
     }
-    TObj* _head;
-    TObj* _tail;
+    TObj _head;
+    TObj _tail;
 };
 
 
@@ -166,29 +166,29 @@ public:
     }
 
     
-    TObj * Nil()
+    TObj  Nil()
     {
-        return (TObj*) (new TNil());
+        return   (new TNil());
     }
     
-    TObj * Cons(TObj * head, TObj * tail)
+    TObj  Cons(TObj  head, TObj  tail)
     {
-        return   (TObj*)(new TCons(head, tail));
+        return   (new TCons(head, tail));
     }
-    TObj* ListReader( )
+    TObj ListReader( )
     {
         while(true)
         {
             eat_whitespace();
-            std::list<TObj*> lst;
+            std::list<TObj> lst;
             char c;
             if(read(c))
             {
                 if(c == ')')
                 {
-                    TObj* acc = Nil();
+                    TObj acc = Nil();
                 
-                    for_each(lst.begin(), lst.end(), [this, &acc](TObj *o)
+                    for_each(lst.begin(), lst.end(), [this, &acc](TObj o)
                     {
                         acc = this->Cons(o , acc);
                         return acc;
@@ -209,7 +209,7 @@ public:
         
     }
     
-    TObj* readNumber (char firstChar)
+    TObj readNumber (char firstChar)
     {
         std::string acc(1, firstChar);
         while (true)
@@ -229,12 +229,13 @@ public:
                 break;
         }
         int n = std::stoi(acc);
-        return (TObj* )(new TInt(n));
+        auto res = (new TInt(n));
+        return res ;
     }
     
     
     
-    TObj * readSymbol(char firstChar)
+    TObj  readSymbol(char firstChar)
     {
         std::string acc(1, firstChar);
         while (true)
@@ -253,14 +254,14 @@ public:
             else
                 break;
         }
-        return (TObj* )(new TSymbol(acc));
+        return (new TSymbol(acc));
     }
     
-    std::function<TObj*(Lan&)> getHander(char c)
+    std::function<TObj(Lan&)> getHander(char c)
     {
        if( c == '(')
        {
-           std::function<TObj*(Lan&)> p1 = &Lan::ListReader;
+           std::function<TObj(Lan&)> p1 = &Lan::ListReader;
            return p1;
        }
        else if( c == ')')
@@ -275,7 +276,7 @@ public:
     
     
     
-    TObj * readObj()
+    TObj  readObj()
     {
         eat_whitespace();
         char c;
@@ -296,23 +297,38 @@ public:
                 
         }
         
-        return nullptr;
+        return (new TNil());
     }
     
-    TObj* compile( )
+    TObj compile( )
     {
-        TObj * obj = readObj();
+        TObj obj = readObj();
         
         return obj;
     }
     
     
-    void getASTStr(TObj * obj, String& str)
+    void getASTStr(TObj  obj, String& str)
     {
-        obj->match( []  (TNil a)  {    }
-                   ,[]  (TInt e)  {    }
-                   ,[]  (TSymbol e)  {    }
-                   ,[]  (TCons e)  {    }
+        obj.match( [&str]  (TNil* a)
+                   {
+                       str += "Nil";
+                       
+                   }
+                   ,[&str]  (TInt* e)
+                   {
+                       str += "TInt";
+                       
+                   }
+                   ,[&str]  (TSymbol* e)
+                   {
+                       str += "TSymbol";
+                       
+                   }
+                   ,[&str]  (TCons* e)
+                   {
+                       str += "TCons";
+                   }
                    
                    
                    
