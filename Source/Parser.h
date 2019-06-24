@@ -333,31 +333,31 @@ public:
     }
     
     
-    void getASTStr(TObj  obj, String& str)
+    void getASTStr(TObj  obj, String& str, int indent = 0)
     {
         obj.match( [&str]  (TNil* a)
                    {
-                       str += " Nil";
-                       
+                       str += " Nil";                       
                    }
                    ,[&str]  (TInt* e)
                    {
                        str += " Int: " + String(e->_val);
-                       
                    }
-                   ,[&str]  (TSymbol* e)
+                   ,[&str, this, indent]  (TSymbol* e)
                    {
-                       str += "\nTSymbol: " + String(e->_sym);
-                   
-                       
+                       str += String(e->_sym);
                    }
-                   ,[&str, this]  (TCons* e)
+                   ,[&str, this, &indent]  (TCons* e)
                    {
-                       str += "( ";
-                       getASTStr(e->_head, str);
-                       getASTStr(e->_tail, str);
+					   if (indent == 0)
+						   str +=   "`( ";
+					   else
+						   str += "\n" + getSpace(indent) + "`(";
+
+                       getASTStr(e->_head, str, ++indent);
+                       getASTStr(e->_tail, str, ++indent);
                        
-                       str += " )";
+                       str += ")";
                    }
                    
                    
@@ -381,6 +381,13 @@ protected:
     
 private:
     String _src;
+
+
+private:
+	String getSpace(int n)
+	{
+		return String::repeatedString("   ", n);
+	}
     
 };
 
