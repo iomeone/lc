@@ -274,18 +274,22 @@ public:
     {
        if( c == '(')
        {
-           std::function<TObj()> p1 = [this]()
+           std::function<TObj()> h = [this]()
            {
                return this->ListReader();
            };
-          
-           return p1;
+           return h;
        }
        else if( c == ')')
        {
-           char errorInfo[256];
-           sprintf(errorInfo, "unexpected ')', line: %ld coloum: %ld", _line, _col);
-           throw std::runtime_error(errorInfo);
+		   std::function<TObj()> h = [this]()
+		   {
+			   char errorInfo[256];
+			   sprintf(errorInfo, "unexpected ')', line: %ld coloum: %ld", _line, _col);
+			   throw std::runtime_error(errorInfo);
+			   return (new TNil);
+		   };
+		   return h;
        }
         else
             return nullptr;
