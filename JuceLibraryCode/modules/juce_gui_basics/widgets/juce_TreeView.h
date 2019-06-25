@@ -283,8 +283,7 @@ public:
         Each item can be a different width, but if they change width, you should call
         treeHasChanged() to update the tree.
     */
-    virtual int
-    getItemWidth() const                                { return -1; }
+    virtual int getItemWidth() const                                { return -1; }
 
     /** Must return the height required by this item.
 

@@ -10,98 +10,22 @@
 
 #pragma once
 
+#include "../JuceLibraryCode/JuceHeader.h"
+#include "Type.h"
 
 #include <list>
-
 #include <stdexcept>
 #include <stdio.h>
 #include <exception>
 
-#include <mapbox/variant.hpp>
-#include "../JuceLibraryCode/JuceHeader.h"
-//// The object type
-//class Obj {
-//public:
-//    // The first word of the object represents the type of the object. Any code that handles object
-//    // needs to check its type first, then access the following union members.
-//
-//    Obj(TYPE t)
-//    {
-//        _type = t;
-//    }
-//    ~Obj(){}
-//    TYPE _type;
-//
-//    // Object values.
-//    union {
-//        // Int
-//        int value;
-//        // Cell
-//        struct {
-//            struct Obj *car;
-//            struct Obj *cdr;
-//        };
-//        // Symbol
-//        String name;
-//        // Primitive
-//        //        Primitive *fn;
-//        // Function or Macro
-//        struct {
-//            struct Obj *params;
-//            struct Obj *body;
-//            struct Obj *env;
-//        };
-//        // Subtype for special type
-//        int subtype;
-//        // Environment frame. This is a linked list of association lists
-//        // containing the mapping from symbols to their value.
-//        struct {
-//            struct Obj *vars;
-//            struct Obj *up;
-//        };
-//        // Forwarding pointer
-//        void *moved;
-//    };
-//} ;
+
+
+
 
 inline void msg(String s)
 {
-    AlertWindow::showMessageBox(AlertWindow::AlertIconType::InfoIcon, "msg", s, "ok");
+	AlertWindow::showMessageBox(AlertWindow::AlertIconType::InfoIcon, "msg", s, "ok");
 }
-
-struct TNil {int x;};
-struct TInt
-{
-    TInt(int v)
-    {
-        _val = v;
-    }
-    int _val;
-    
-};
-
-struct TSymbol
-{
-    TSymbol(String s)
-    {
-        _sym = s;
-    }
-    String _sym;
-};
-struct TCons;
-
-using TObj = mapbox::util::variant<TNil*, TInt*, TSymbol*, mapbox::util::recursive_wrapper<TCons*>>;
-
-struct TCons
-{
-    TCons(TObj h, TObj t)
-    {
-        _head = h;
-        _tail = t;
-    }
-    TObj _head;
-    TObj _tail;
-};
 
 
 class Lan{
@@ -361,7 +285,6 @@ public:
                        str += ")";
                    }
 
-                   
                    );                   
     }
     
