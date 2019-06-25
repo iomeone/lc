@@ -30,7 +30,7 @@ class Context {
 
 public:
 
-	Context(uint32 argc) : sp(argc + 3)
+	Context(uint32 argc) : sp(argc + 3)  // the saved context ocupy 3 spaces.
 	{
 
 	}
@@ -41,6 +41,21 @@ public:
 		return c;
 	}
 
+	void push_const(TObj& obj)
+	{
+		jassert(obj.is<TInt*>());
+
+		int idx = consts.size();
+
+		consts.push_back(obj.get<TInt*>()->_val);
+
+		bytecode.push_back(INS::LOAD_CONST);
+
+		bytecode.push_back(idx);
+
+		sp += 1;
+	}
+
 	std::vector<uint32> bytecode;
 	std::vector<uint32> consts;
 	std::vector< std::map<std::string, int>> locals;
@@ -48,6 +63,15 @@ public:
 
 	uint32 sp;
 	bool can_tail_call{ false };
+
 };
 
+class CompileInfo
+{
+public:
+	String log;
+	int	   indent;
+};
 
+void compile_(TObj&  obj, Context & ctx, CompileInfo& compileInfo);
+Code compile(TObj& obj, CompileInfo& compileInfo);

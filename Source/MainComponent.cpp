@@ -9,6 +9,7 @@
 #include "MainComponent.h"
 #include "LogComponent.h"
 #include "Parser.h"
+#include "Compiler.h"
 //==============================================================================
 MainComponent::MainComponent()
 {
@@ -23,7 +24,7 @@ MainComponent::MainComponent()
     if(e)
     {
         e->getEditor()->addListener(this);
-		e->getEditor()->setText("(fn xx(x y) (platform+ x 7))");
+		e->getEditor()->setText("(platform+ 6 7)");
     }
      setSize (1200, 800);
 }
@@ -58,27 +59,31 @@ void MainComponent::resized()
    
 }
 
-void MainComponent::textEditorTextChanged(juce::TextEditor & e) { 
-    
-    auto edtLog = dynamic_cast<LogComponent*>(_logWin.get());
-    try
-    {
-        String src = e.getText();
-        Lan lan(src);
-        TObj o = lan.compile();
+void MainComponent::textEditorTextChanged(juce::TextEditor & e) {
 
-            String s;
-            lan.getASTStr(o, s);
-            edtLog->getEditor()->setText(s);
+	auto edtLog = dynamic_cast<LogComponent*>(_logWin.get());
+	try
+	{
+		String src = e.getText();
+		Lan lan(src);
+		TObj o = lan.compile();
 
+		String s;
+		lan.getASTStr(o, s);
 
+		CompileInfo compileInfo;
+		Code c =  compile(o, compileInfo);
+
+		juce::String strByteCode, strConsts;
+		for_each(c._bytecode.begin(), c._bytecode.end(), [&strByteCode](uint32 bytecode){strByteCode += String::toHexString(bytecode) + " ";});
+		for_each(c._consts.begin(), c._consts.end(), [&strConsts](uint32 consts){strConsts += String::toHexString(consts) + " ";});
  
-
-    }
-    catch (std::runtime_error& e)
-    {
-        if(edtLog)
-            edtLog->getEditor()->setText(e.what());
-    }
+		edtLog->getEditor()->setText(s + "\n" + strByteCode + "\n" + strConsts + "\n" + compileInfo.log);
+	}
+	catch (std::runtime_error& e)
+	{
+		if (edtLog)
+			edtLog->getEditor()->setText(e.what());
+	}
 }
 
