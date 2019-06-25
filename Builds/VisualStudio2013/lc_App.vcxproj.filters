@@ -2,6 +2,9 @@
 
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="lc\Source\Compiler">
+      <UniqueIdentifier>{B3AD159E-CF81-84F5-606D-C437409C393A}</UniqueIdentifier>
+    </Filter>
     <Filter Include="lc\Source\Common">
       <UniqueIdentifier>{A2DC346C-A524-54E5-874C-EA5CC1333711}</UniqueIdentifier>
     </Filter>
@@ -424,6 +427,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Compiler.cpp">
+      <Filter>lc\Source\Compiler</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\LogComponent.cpp">
       <Filter>lc\Source\LogComponent</Filter>
     </ClCompile>
@@ -2334,6 +2340,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Compiler.h">
+      <Filter>lc\Source\Compiler</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Type.h">
       <Filter>lc\Source\Common</Filter>
     </ClInclude>

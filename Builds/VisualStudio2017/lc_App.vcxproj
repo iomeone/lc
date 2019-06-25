@@ -140,6 +140,7 @@
     <Lib/>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Compiler.cpp"/>
     <ClCompile Include="..\..\Source\LogComponent.cpp"/>
     <ClCompile Include="..\..\Source\Parser.cpp"/>
     <ClCompile Include="..\..\Source\MainComponent.cpp"/>
@@ -1899,6 +1900,7 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_opengl.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Compiler.h"/>
     <ClInclude Include="..\..\Source\Type.h"/>
     <ClInclude Include="..\..\Source\mapbox\optional.hpp"/>
     <ClInclude Include="..\..\Source\mapbox\recursive_wrapper.hpp"/>

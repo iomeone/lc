@@ -14,6 +14,21 @@
 #include <mapbox/variant.hpp>
 
 
+enum INS
+{
+	LOAD_CONST = 0,
+	ADD,
+	EQ,
+	INVOKE,
+	TAIL_CALL,
+	DUP_NTH,
+	RETURN,
+	COND_BR,
+	JMP
+};
+
+
+
 struct TNil { int x; };
 struct TInt
 {
