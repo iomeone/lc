@@ -335,37 +335,34 @@ public:
     
     void getASTStr(TObj  obj, String& str, int indent = 0)
     {
-        obj.match( [&str]  (TNil* a)
+        obj.match( [&str, this, &indent]  (TNil* a)
                    {
-                       str += " Nil";                       
+						str +=   "   Nil";
                    }
-                   ,[&str]  (TInt* e)
+                   ,[&str, this, &indent]  (TInt* e)
                    {
-                       str += " Int: " + String(e->_val);
+					   str +=  String(e->_val) + ":Int";
                    }
                    ,[&str, this, indent]  (TSymbol* e)
                    {
-                       str += String(e->_sym);
+					   str +=   String(e->_sym);
                    }
                    ,[&str, this, &indent]  (TCons* e)
                    {
 					   if (indent == 0)
-						   str +=   "`( ";
+						   str += "(";
 					   else
-						   str += "\n" + getSpace(indent) + "`(";
+						   str += "\n" + getSpace(indent) + "(";
 
-                       getASTStr(e->_head, str, ++indent);
-                       getASTStr(e->_tail, str, ++indent);
+					   ++indent;
+                       getASTStr(e->_head, str, indent);
+                       getASTStr(e->_tail, str, indent);
                        
                        str += ")";
                    }
+
                    
-                   
-                   
-                   
-                   );//str += "Nil";
-                   
-                   
+                   );                   
     }
     
     

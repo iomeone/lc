@@ -23,6 +23,7 @@ MainComponent::MainComponent()
     if(e)
     {
         e->getEditor()->addListener(this);
+		e->getEditor()->setText("(fn xx(x y) (platform+ x 7))");
     }
      setSize (1200, 800);
 }
@@ -66,7 +67,6 @@ void MainComponent::textEditorTextChanged(juce::TextEditor & e) {
         Lan lan(src);
         TObj o = lan.compile();
 
- 
             String s;
             lan.getASTStr(o, s);
             edtLog->getEditor()->setText(s);
