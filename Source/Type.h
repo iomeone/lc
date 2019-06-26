@@ -48,6 +48,18 @@ struct TSymbol
 	}
 	String _sym;
 };
+
+class Context;
+class Code
+{
+public:
+	Code(Context* ctx);
+
+	std::vector<uint32> _bytecode;
+	std::vector<uint32> _consts;
+};
+
+
 struct TCons;
 
 using TObj = mapbox::util::variant<TNil*, TInt*, TSymbol*, mapbox::util::recursive_wrapper<TCons*>>;
@@ -62,3 +74,6 @@ struct TCons
 	TObj _head;
 	TObj _tail;
 };
+
+
+

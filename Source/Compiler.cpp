@@ -58,41 +58,78 @@ int coutOfCons(TObj & s)
 	return count;
 }
 
+void add_args(TObj & args, Context& ctx, int& count)
+{
+	for (int i = 0; i < count; i++)
+	{
+		jassert(args.is<TCons*>());
+		TObj & a = args.get<TCons*>()->_head;
+
+		jassert(a.is<TSymbol*>());
+		
+		ctx.add_local(a.get<TSymbol*>()->_sym, Arg(i + 1));
+		
+	}
+}
+
 std::function<void(TObj&, Context&, CompileInfo&)> compile_fn = [](TObj&obj, Context&ctx, CompileInfo& compileInfo) {
 
 	jassert(obj.is<TCons*>());             //  obj must be a list, i.e. an Cons struct
 
-	TObj& nxt = obj.get<TCons*>()->_tail;  // obj->head is an fun string,  just an identify, we skip it.
+	TObj form = obj.get<TCons*>()->_tail;  // obj->head is an fun string,  just an identify, we skip it.
 
-	jassert(nxt.is<TCons*>());             // nxt must also be an cons.  eg.  fun (x y) (+ x y),  nxt now represent (x y) (+ x y) . cert
+	jassert(form.is<TCons*>());             // nxt must also be an cons.  eg.  fun (x y) (+ x y),  nxt now represent (x y) (+ x y) . cert
 
-	TObj& nameObj = nxt.get<TCons*>()->_head;
-	String name ;
-	if (nameObj.is<TSymbol*>())             // the function has a name.  eg.  fun myadd(x y) (+ x y)
+	//TObj& maybeArgCons = maybeNameCons.get<TCons*>()->_head;
+
+	//TObj& maybeNameSymbol = maybeNameCons.get<TCons*>()->_head;
+
+	bool hasName = false;
+	TObj name;
+	//TObj argsCons;
+
+	if (form.get<TCons*>()->_head.is<TSymbol*>())             // the function has a name.  eg.  fun myadd(x y) (+ x y)
 	{
-		name = nameObj.get<TSymbol*>()->_sym;
+		//hasName = true;
+
+		name = form.get<TCons*>()->_head;	 // nameObj.get<TSymbol*>()->_sym;
+
+		form = form.get<TCons*>()->_tail;
+		/*TObj nxtLst = maybeNameCons.get<TCons*>()->_tail;
+		jassert(nxtLst.is<TCons*>());
+		argsCons = nxtLst.get<TCons*>()->_head;*/
 	}
-	else
+
+	jassert(form.is<TCons*>());
+	TObj& args = form.get<TCons*>()->_head;
+	jassert(args.is<TCons*>() || args.is<TNil*>());
+
+	TObj& body = form.get<TCons*>()->_tail;
+
+	int numOfArgs = coutOfCons(args);
+	Context new_ctx(numOfArgs);
+	add_args(args, new_ctx, numOfArgs);
+
+	if (hasName)
 	{
-		name = "";                         // the function do not have a name.
-		TObj args = nameObj;			   // the nameObj actually is args list;
-
-		jassert(args.is<TCons*>() || args.is<TNil*>());   // arg list must be an none empty list (i.e. TCons object)  or empty list (i.e. TNil object)
-
-		TObj body = nxt.get<TCons*>()->_tail;
-
-		Context new_ctx(coutOfCons(args));
-
+		jassert(name.is<TSymbol*>());
+		new_ctx.add_local(name.get<TSymbol*>()->_sym, Arg(0));
 	}
 
+	new_ctx.can_tail_call = true;
 
+	jassert(body.is<TCons*>() || body.is<TNil*>());
 
+	while (!body.is<TNil*>())
+	{
+		compile_(body.get<TCons*>()->_head, new_ctx, compileInfo);
+		body = body.get<TCons*>()->_tail;
 
+		jassert(body.is<TCons*>() || body.is<TNil*>());
+	}
 
-
-
-
-
+	new_ctx.bytecode.push_back(INS::RETURN);
+	//ctx.push_const( TObj( new_ctx.to_code()) );
 
 };
 
@@ -181,8 +218,8 @@ Code compile(TObj& obj, CompileInfo& compileInfo)
 
 	compileInfo.log += "\nreturn";
 	ctx.bytecode.push_back(INS::RETURN);
-	Code c = ctx.to_code();
-	return c;
+	Code *c = ctx.to_code();
+	return *c;
 
 
 }
@@ -193,7 +230,7 @@ Code::Code(Context * ctx)
 	_consts = ctx->consts;
 }
 
-
-
-
-
+void Arg::emit(Context & ctx)
+{
+	ctx.push_arg(idx);
+}
