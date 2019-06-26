@@ -227,7 +227,7 @@ Code compile(TObj& obj, CompileInfo& compileInfo)
 
 }
 
-Code::Code(std::vector<uint32> bytecode , std::vector<uint32> consts)
+Code::Code(std::vector<uint32> bytecode , std::vector<TObj> consts)
 {
 	_bytecode = bytecode;
 	_consts = consts;

@@ -76,7 +76,9 @@ void MainComponent::textEditorTextChanged(juce::TextEditor & e) {
 
 		juce::String strByteCode, strConsts;
 		for_each(c._bytecode.begin(), c._bytecode.end(), [&strByteCode](uint32 bytecode){strByteCode += String::toHexString(bytecode) + " ";});
-		for_each(c._consts.begin(), c._consts.end(), [&strConsts](uint32 consts){strConsts += String::toHexString(consts) + " ";});
+		
+        
+//        for_each(c._consts.begin(), c._consts.end(), [&strConsts](uint32 consts){strConsts += String::toHexString(consts) + " ";});
  
 		edtLog->getEditor()->setText(s + "\n" + strByteCode + "\n" + strConsts + "\n" + compileInfo.log);
 	}

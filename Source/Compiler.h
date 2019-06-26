@@ -51,17 +51,17 @@ public:
 
 	Code* to_code()
 	{
-		return (new Code(this->bytecode, this->consts));
+		return new Code(this->bytecode, this->consts);
 	
 	}
 
 	void push_const(TObj obj)
 	{
-		jassert(obj.is<TInt*>());
+		jassert(obj.is<TInt*>() || obj.is<Code*>());
 
-		int idx = consts.size();
+		size_t idx = consts.size();
 
-		consts.push_back(obj.get<TInt*>()->_val);
+		consts.push_back(obj);
 
 		bytecode.push_back(INS::LOAD_CONST);
 
@@ -98,7 +98,7 @@ public:
 
 	void add_local(String& argName, Arg arg) //test  Arg&  or  Arg ?
 	{
-		int len = locals.size();
+		size_t len = locals.size();
 		if (len > 1)
 		{
 			auto lastItem = locals.back();
@@ -114,7 +114,7 @@ public:
 	}
 
 	std::vector<uint32> bytecode;
-	std::vector<uint32> consts;
+	std::vector<TObj> consts;
 	std::vector< std::map<String, Arg>> locals;
 
 
