@@ -17,73 +17,10 @@
 //			"platform=" : compile_platform_eq }
 
 
-
-//def compile_platform_eq(form, ctx):
-//    form = form.next()
-//    assert count(form) == 2
-//    while form is not nil:
-//        compile_form(form.first(), ctx)
-//        form = form.next()
-//
-//    ctx.bytecode.append(code.EQ)
-//    ctx.sp -= 1
-//    return ctx
-
-
-
-std::function<TObj()> getHander(String& c)
-{
-	if (c == "platform+")
-	{
-		//std::function<TObj()> h = [this]()
-		//{
-		//	return this->ListReader();
-		//};
-		//return h;
-		return nullptr;
-	}
-	else if (c == "fn")
-	{
-		//std::function<TObj()> h = [this]()
-		//{
-		//	char errorInfo[256];
-		//	sprintf(errorInfo, "unexpected ')', line: %ld coloum: %ld", _line, _col);
-		//	throw std::runtime_error(errorInfo);
-		//	return (new TNil);
-		//};
-		//return h;
-		return nullptr;
-	}
-	else if (c == "if")
-	{
-		return nullptr;
-	}
-	else if (c == "platform=")
-	{
-		return nullptr;
-	}
-	else
-		return nullptr;
-}
-
-
-
 String getSpace(int n)
 {
 	return String::repeatedString("   ", n);
 }
-
-
-//def compile_platform_plus(form, ctx) :
-//	form = form.next()
-//	while form is not nil :
-//		compile_form(form.first(), ctx)
-//		form = form.next()
-//
-//		ctx.bytecode.append(code.ADD)
-//		ctx.sp -= 1
-//		return ctx
-
 
 
 
@@ -98,7 +35,6 @@ std::function<void(TObj&, Context&, CompileInfo&)> compile_platform_plus = [](TO
 
 		compile_(nxt.get<TCons*>()->_head, ctx, compileInfo);
 		nxt = nxt.get<TCons*>()->_tail;
-		
 	}
 
 	compileInfo.log += "\nADD";
@@ -107,6 +43,61 @@ std::function<void(TObj&, Context&, CompileInfo&)> compile_platform_plus = [](TO
 	ctx.sp -= 1;   //  pop up two integer, and push the result ,  so overall , the stack need substruct 1.    
 					//  question : it seems we need track the number of add argument, the code should be sp -= coutOfArg -1;
 };
+
+int coutOfCons(TObj & s)
+{
+	int count = 0;
+	TObj& t = s;
+
+	while (!t.is<TNil*>())
+	{
+		++count;
+		jassert(t.is<TCons*>());  // arg list must be list of TCons type.
+		t = t.get<TCons*>()->_tail;
+	}
+	return count;
+}
+
+std::function<void(TObj&, Context&, CompileInfo&)> compile_fn = [](TObj&obj, Context&ctx, CompileInfo& compileInfo) {
+
+	jassert(obj.is<TCons*>());             //  obj must be a list, i.e. an Cons struct
+
+	TObj& nxt = obj.get<TCons*>()->_tail;  // obj->head is an fun string,  just an identify, we skip it.
+
+	jassert(nxt.is<TCons*>());             // nxt must also be an cons.  eg.  fun (x y) (+ x y),  nxt now represent (x y) (+ x y) . cert
+
+	TObj& nameObj = nxt.get<TCons*>()->_head;
+	String name ;
+	if (nameObj.is<TSymbol*>())             // the function has a name.  eg.  fun myadd(x y) (+ x y)
+	{
+		name = nameObj.get<TSymbol*>()->_sym;
+	}
+	else
+	{
+		name = "";                         // the function do not have a name.
+		TObj args = nameObj;			   // the nameObj actually is args list;
+
+		jassert(args.is<TCons*>() || args.is<TNil*>());   // arg list must be an none empty list (i.e. TCons object)  or empty list (i.e. TNil object)
+
+		TObj body = nxt.get<TCons*>()->_tail;
+
+		Context new_ctx(coutOfCons(args));
+
+	}
+
+
+
+
+
+
+
+
+
+
+};
+
+
+
 
 std::function<void(TObj&, Context&, CompileInfo& compileInfo)> builtins(String& key)
 {
