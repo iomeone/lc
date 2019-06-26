@@ -284,7 +284,10 @@ public:
                        
                        str += ")";
                    }
-
+                  ,[&str, this, indent]  (Code* e)
+                  {
+//                      str +=   String(e->_sym);
+                  }
                    );                   
     }
     

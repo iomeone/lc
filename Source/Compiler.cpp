@@ -129,7 +129,7 @@ std::function<void(TObj&, Context&, CompileInfo&)> compile_fn = [](TObj&obj, Con
 	}
 
 	new_ctx.bytecode.push_back(INS::RETURN);
-	//ctx.push_const( TObj( new_ctx.to_code()) );
+	ctx.push_const( TObj( new_ctx.to_code()) );
 
 };
 
@@ -171,7 +171,10 @@ void compile_(TObj&  obj, Context & ctx, CompileInfo& compileInfo)
 		//compileInfo.log += String(e->_sym);
 	}
 	
-		
+    , [&compileInfo](Code* e)
+    {
+        //compileInfo.log += String(e->_sym);
+    }
 	, [&compileInfo, &ctx, &obj](TCons* e)
 	{
 		// if is builtins function.
@@ -224,10 +227,10 @@ Code compile(TObj& obj, CompileInfo& compileInfo)
 
 }
 
-Code::Code(Context * ctx)
+Code::Code(std::vector<uint32> bytecode , std::vector<uint32> consts)
 {
-	_bytecode = ctx->bytecode;
-	_consts = ctx->consts;
+	_bytecode = bytecode;
+	_consts = consts;
 }
 
 void Arg::emit(Context & ctx)

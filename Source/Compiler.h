@@ -51,11 +51,11 @@ public:
 
 	Code* to_code()
 	{
-		return (new Code(this));
+		return (new Code(this->bytecode, this->consts));
 	
 	}
 
-	void push_const(TObj& obj)
+	void push_const(TObj obj)
 	{
 		jassert(obj.is<TInt*>());
 
