@@ -96,7 +96,7 @@ public:
 	}
 
 
-	void add_local(String& argName, Arg& arg) //test  Arg&  or  Arg ?
+	void add_local(String& argName, Arg arg) //test  Arg&  or  Arg ?
 	{
 		int len = locals.size();
 		if (len > 1)
