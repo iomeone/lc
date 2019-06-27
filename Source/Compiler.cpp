@@ -44,10 +44,10 @@ std::function<void(TObj&, Context&, CompileInfo&)> compile_platform_plus = [](TO
 					//  question : it seems we need track the number of add argument, the code should be sp -= coutOfArg -1;
 };
 
-int coutOfCons(TObj & s)
+int coutOfCons(const TObj & s)
 {
 	int count = 0;
-	TObj& t = s;
+	TObj t = s;
 
 	while (!t.is<TNil*>())
 	{
@@ -61,14 +61,13 @@ int coutOfCons(TObj & s)
 void add_args(TObj & args, Context& ctx, int& count)
 {
 	for (int i = 0; i < count; i++)
-	{
+	{	
 		jassert(args.is<TCons*>());
 		TObj & a = args.get<TCons*>()->_head;
 
 		jassert(a.is<TSymbol*>());
 		
 		ctx.add_local(a.get<TSymbol*>()->_sym, Arg(i + 1));
-		
 	}
 }
 
@@ -140,7 +139,8 @@ std::function<void(TObj&, Context&, CompileInfo& compileInfo)> builtins(String& 
 {
 	if (key == "platform+")
 		return compile_platform_plus;
-
+	else if (key == "fn")
+		return compile_fn;
 
 	return nullptr;
 }
@@ -189,22 +189,22 @@ void compile_(TObj&  obj, Context & ctx, CompileInfo& compileInfo)
 			}
 				
 		}
+		int cnt = 0;
+		TObj form = e;
 
-		// not build in function.
+		while (form.is<TCons*>() )
+		{
+			compile_(form.get<TCons*>()->_head, ctx, compileInfo);
+			form = form.get<TCons*>()->_tail;
+		}
+		jassert(form.is<TNil*>());
 
+		if (ctx.can_tail_call)
+			ctx.bytecode.push_back(INS::TAIL_CALL);
+		else
+			ctx.bytecode.push_back(INS::INVOKE);
 
-
-		//if (indent == 0)
-		//	str += "(";
-		//else
-		//	str += "\n" + getSpace(indent) + "(";
-
-
-		//++indent;
-		//compile_(e->_head, ctx, str, indent);
-		//compile_(e->_tail, ctx, str, indent);
-
-		//str += ")";
+		ctx.bytecode.push_back(cnt);
 	}
 
 

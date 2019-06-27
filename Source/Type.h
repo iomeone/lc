@@ -29,7 +29,7 @@ enum INS
 
 
 
-struct TNil { int x; };
+struct TNil {  };
 struct TInt
 {
 	TInt(int v)

@@ -24,7 +24,7 @@ MainComponent::MainComponent()
     if(e)
     {
         e->getEditor()->addListener(this);
-		e->getEditor()->setText("(platform+ 6 7)");
+		e->getEditor()->setText("((fn (x y) (platform+ x y)) 1 2)");//(platform+ 6 7)
     }
      setSize (1200, 800);
 }
@@ -73,12 +73,30 @@ void MainComponent::textEditorTextChanged(juce::TextEditor & e) {
 
 		CompileInfo compileInfo;
 		Code c =  compile(o, compileInfo);
-
+		 
 		juce::String strByteCode, strConsts;
 		for_each(c._bytecode.begin(), c._bytecode.end(), [&strByteCode](uint32 bytecode){strByteCode += String::toHexString(bytecode) + " ";});
 		
-        
-//        for_each(c._consts.begin(), c._consts.end(), [&strConsts](uint32 consts){strConsts += String::toHexString(consts) + " ";});
+        // 需要用递归重写
+        for_each(c._consts.begin(), c._consts.end(), [&strConsts](TObj itemConst)
+		{
+			jassert(itemConst.is<Code*>() || itemConst.is<TInt*>());
+
+			if (itemConst.is<Code*>())
+			{
+
+			}
+			else if (itemConst.is<TInt*>())
+			{
+				strConsts += String::toHexString(itemConst.get<TInt*>()->_val) + " ";
+			}
+			else
+			{
+
+			}
+		
+			
+		});
  
 		edtLog->getEditor()->setText(s + "\n" + strByteCode + "\n" + strConsts + "\n" + compileInfo.log);
 	}
