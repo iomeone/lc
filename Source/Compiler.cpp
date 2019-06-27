@@ -77,11 +77,8 @@ std::function<void(TObj&, Context&, CompileInfo&)> compile_fn = [](TObj&obj, Con
 
 	TObj form = obj.get<TCons*>()->_tail;  // obj->head is an fun string,  just an identify, we skip it.
 
-	jassert(form.is<TCons*>());             // nxt must also be an cons.  eg.  fun (x y) (+ x y),  nxt now represent (x y) (+ x y) . cert
+	jassert(form.is<TCons*>());             // form must also be an cons.  eg.  fun (x y) (+ x y),  nxt now represent (x y) (+ x y) . cert
 
-	//TObj& maybeArgCons = maybeNameCons.get<TCons*>()->_head;
-
-	//TObj& maybeNameSymbol = maybeNameCons.get<TCons*>()->_head;
 
 	bool hasName = false;
 	TObj name;
@@ -94,9 +91,6 @@ std::function<void(TObj&, Context&, CompileInfo&)> compile_fn = [](TObj&obj, Con
 		name = form.get<TCons*>()->_head;	 // nameObj.get<TSymbol*>()->_sym;
 
 		form = form.get<TCons*>()->_tail;
-		/*TObj nxtLst = maybeNameCons.get<TCons*>()->_tail;
-		jassert(nxtLst.is<TCons*>());
-		argsCons = nxtLst.get<TCons*>()->_head;*/
 	}
 
 	jassert(form.is<TCons*>());
@@ -128,6 +122,7 @@ std::function<void(TObj&, Context&, CompileInfo&)> compile_fn = [](TObj&obj, Con
 	}
 
 	new_ctx.bytecode.push_back(INS::RETURN);
+
 	ctx.push_const( TObj( new_ctx.to_code()) );
 
 };
@@ -173,12 +168,12 @@ void compile_(TObj&  obj, Context & ctx, CompileInfo& compileInfo)
 	
     , [&compileInfo](Code* e)
     {
-        //compileInfo.log += String(e->_sym);
+		compileInfo.log += "\nCode???";
     }
-	, [&compileInfo, &ctx, &obj](TCons* e)
+		, [&compileInfo, &ctx, &obj](TCons* e)
 	{
 		// if is builtins function.
-		if ( e->_head.is<TSymbol*>())   // extreamly cool !!!!!!!!!!
+		if (e->_head.is<TSymbol*>())   // extreamly cool !!!!!!!!!!
 		{
 			String& sym = e->_head.get<TSymbol*>()->_sym;
 			auto fn = builtins(sym);
@@ -187,24 +182,33 @@ void compile_(TObj&  obj, Context & ctx, CompileInfo& compileInfo)
 				fn(obj, ctx, compileInfo);
 				return;
 			}
-				
+
 		}
 		int cnt = 0;
 		TObj form = e;
 
-		while (form.is<TCons*>() )
+		while (form.is<TCons*>())
 		{
 			compile_(form.get<TCons*>()->_head, ctx, compileInfo);
 			form = form.get<TCons*>()->_tail;
+			++cnt;
 		}
 		jassert(form.is<TNil*>());
 
 		if (ctx.can_tail_call)
+		{
 			ctx.bytecode.push_back(INS::TAIL_CALL);
+			compileInfo.log += "\nTAIL_CALL	";
+		}
+
 		else
+		{
 			ctx.bytecode.push_back(INS::INVOKE);
+			compileInfo.log += "\nINVOKE	";
+		}
 
 		ctx.bytecode.push_back(cnt);
+		compileInfo.log += String::toHexString(cnt);
 	}
 
 
@@ -219,7 +223,7 @@ Code compile(TObj& obj, CompileInfo& compileInfo)
 	auto s = String("");
 	compile_(obj, ctx, compileInfo);
 
-	compileInfo.log += "\nreturn";
+	compileInfo.log += "\nRETURN";
 	ctx.bytecode.push_back(INS::RETURN);
 	Code *c = ctx.to_code();
 	return *c;
