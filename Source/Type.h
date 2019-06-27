@@ -46,6 +46,10 @@ struct TSymbol
 	{
 		_sym = s;
 	}
+	//TSymbol& operator=(TSymbol& other)   // do not need to , bcz string has it's copy operator = override.
+	//{
+	//	other._sym = _sym;
+	//}
 	String _sym;
 };
 

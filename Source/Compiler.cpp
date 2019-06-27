@@ -58,17 +58,24 @@ int coutOfCons(const TObj & s)
 	return count;
 }
 
-void add_args(TObj & args, Context& ctx, int& count)
+void add_args(const TObj & t, Context& ctx, int& count)
 {
-	for (int i = 0; i < count; i++)
-	{	
+
+	TObj args = t;
+	int i = 0;
+	while (!args.is<TNil*>())
+	{
 		jassert(args.is<TCons*>());
 		TObj & a = args.get<TCons*>()->_head;
 
 		jassert(a.is<TSymbol*>());
-		
+
 		ctx.add_local(a.get<TSymbol*>()->_sym, Arg(i + 1));
+		args = args.get<TCons*>()->_tail;
+		++i;
 	}
+
+
 }
 
 std::function<void(TObj&, Context&, CompileInfo&)> compile_fn = [](TObj&obj, Context&ctx, CompileInfo& compileInfo) {
@@ -122,8 +129,12 @@ std::function<void(TObj&, Context&, CompileInfo&)> compile_fn = [](TObj&obj, Con
 	}
 
 	new_ctx.bytecode.push_back(INS::RETURN);
+	compileInfo.log += "\nRet";
 
+	compileInfo.log += "\nLOAD_CONST index:" + String(new_ctx.consts.size());
 	ctx.push_const( TObj( new_ctx.to_code()) );
+
+	
 
 };
 
@@ -153,17 +164,36 @@ void compile_(TObj&  obj, Context & ctx, CompileInfo& compileInfo)
 	}
 	
 		
-	, [&compileInfo, &ctx, &obj](TInt* e)
+	, [&compileInfo, &ctx](TInt* e)
 	{
 		compileInfo.log +=  "\nLOAD_CONST index:" + String(ctx.consts.size())+ String(" val:") + String(e->_val);
 
-		ctx.push_const(obj);
+		ctx.push_const(e);
 	}
 	
 		
-	, [&compileInfo](TSymbol* e)
+	, [&compileInfo, &ctx](TSymbol* e )
 	{
 		//compileInfo.log += String(e->_sym);
+		char errorInfo[256];
+		std::map<String, Arg>::iterator iter = ctx.locals.back().find(e->_sym);
+
+		if (iter == ctx.locals.back().end())
+		{
+			sprintf(errorInfo, "undefined symbol %s, line: %ld coloum: %ld", e->_sym, compileInfo._line, compileInfo._col); // TSymbol should contain col and line infomation
+			throw std::runtime_error(errorInfo);
+		}
+		else
+		{		
+			compileInfo.log += "\npush symbol:" + String(e->_sym) + String(" index:") + String::toHexString(iter->second.idx);
+			iter->second.emit(ctx);
+		
+		}
+
+		//sprintf(errorInfo, "can not compile. line: %ld coloum: %ld", compileInfo._line, compileInfo._col); // TSymbol should contain col and line infomation
+		//throw std::runtime_error(errorInfo);
+
+
 	}
 	
     , [&compileInfo](Code* e)

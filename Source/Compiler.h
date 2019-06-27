@@ -99,7 +99,7 @@ public:
 	void add_local(String& argName, Arg arg) //test  Arg&  or  Arg ?
 	{
 		size_t len = locals.size();
-		if (len > 1)
+		if (len >= 1)
 		{
 			auto lastItem = locals.back();
 			lastItem.emplace(argName, arg);
@@ -128,6 +128,8 @@ class CompileInfo
 public:
 	String log;
 	int	   indent;
+	int _line;
+	int _col;
 };
 
 void compile_(TObj&  obj, Context & ctx, CompileInfo& compileInfo);
