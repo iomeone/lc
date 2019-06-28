@@ -57,6 +57,10 @@
 			isa = PBXBuildFile;
 			fileRef = C66B451EA7A0D3F515C120F6;
 		};
+		4E91AA049A3997ADC15DE61E = {
+			isa = PBXBuildFile;
+			fileRef = 876A49A8E8637FEB7A0CC910;
+		};
 		F88082CE32335FB9AB7DA7EE = {
 			isa = PBXBuildFile;
 			fileRef = 57BC57938050F190FCB3775C;
@@ -234,6 +238,13 @@
 			path = "../../JuceLibraryCode/modules/juce_audio_processors";
 			sourceTree = "SOURCE_ROOT";
 		};
+		511549466656D0531B2216EC = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = BytecodeInterpreter.h;
+			path = ../../Source/BytecodeInterpreter.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		57BC57938050F190FCB3775C = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -295,6 +306,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = LogComponent.cpp;
 			path = ../../Source/LogComponent.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		876A49A8E8637FEB7A0CC910 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = BytecodeInterpreter.cpp;
+			path = ../../Source/BytecodeInterpreter.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		8909B0C45F2D986435D74269 = {
@@ -535,6 +553,15 @@
 			path = "../../JuceLibraryCode/modules/juce_events";
 			sourceTree = "SOURCE_ROOT";
 		};
+		BED10A0D65625B1331733FC3 = {
+			isa = PBXGroup;
+			children = (
+				876A49A8E8637FEB7A0CC910,
+				511549466656D0531B2216EC,
+			);
+			name = BytecodeInterpreter;
+			sourceTree = "<group>";
+		};
 		EB46F21BEE39B3A7ED76647A = {
 			isa = PBXGroup;
 			children = (
@@ -586,6 +613,7 @@
 		9932C1885D1B3203DAAB7A8D = {
 			isa = PBXGroup;
 			children = (
+				BED10A0D65625B1331733FC3,
 				EB46F21BEE39B3A7ED76647A,
 				3E231C026D9F27C435874E4A,
 				83F450BDE96D511162BE78BA,
@@ -908,6 +936,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E91AA049A3997ADC15DE61E,
 				F88082CE32335FB9AB7DA7EE,
 				833C2E9339DE9855878B7E40,
 				CF7D1727B597058B612135EC,

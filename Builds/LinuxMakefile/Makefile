@@ -68,6 +68,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS_APP := \
+  $(JUCE_OBJDIR)/BytecodeInterpreter_14cd1c26.o \
   $(JUCE_OBJDIR)/Compiler_91d9bfa8.o \
   $(JUCE_OBJDIR)/LogComponent_246d8222.o \
   $(JUCE_OBJDIR)/Parser_efe73428.o \
@@ -99,6 +100,11 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : $(OBJECTS_APP) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) $(OBJECTS_APP) $(JUCE_LDFLAGS) $(JUCE_LDFLAGS_APP) $(RESOURCES) $(TARGET_ARCH)
+
+$(JUCE_OBJDIR)/BytecodeInterpreter_14cd1c26.o: ../../Source/BytecodeInterpreter.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling BytecodeInterpreter.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/Compiler_91d9bfa8.o: ../../Source/Compiler.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)

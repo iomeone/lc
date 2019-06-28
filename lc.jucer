@@ -3,6 +3,12 @@
 <JUCERPROJECT id="WDtQuB" name="lc" projectType="guiapp" jucerVersion="5.4.3">
   <MAINGROUP id="L1XPcu" name="lc">
     <GROUP id="{B5107477-1742-603C-2EE8-EFEE79DECFA8}" name="Source">
+      <GROUP id="{376B0A8F-842F-E3E3-29C6-60392F565221}" name="BytecodeInterpreter">
+        <FILE id="JZ9rk0" name="BytecodeInterpreter.cpp" compile="1" resource="0"
+              file="Source/BytecodeInterpreter.cpp"/>
+        <FILE id="GbK2C9" name="BytecodeInterpreter.h" compile="0" resource="0"
+              file="Source/BytecodeInterpreter.h"/>
+      </GROUP>
       <GROUP id="{74E93B45-8BAA-5CAB-29A2-90C68F88F32B}" name="Compiler">
         <FILE id="izXPos" name="Compiler.cpp" compile="1" resource="0" file="Source/Compiler.cpp"/>
         <FILE id="hoLgeB" name="Compiler.h" compile="0" resource="0" file="Source/Compiler.h"/>

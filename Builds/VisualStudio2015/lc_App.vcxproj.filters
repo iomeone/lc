@@ -2,6 +2,9 @@
 
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="lc\Source\BytecodeInterpreter">
+      <UniqueIdentifier>{6E3B6520-14C9-4032-DB80-23B50558309D}</UniqueIdentifier>
+    </Filter>
     <Filter Include="lc\Source\Compiler">
       <UniqueIdentifier>{B3AD159E-CF81-84F5-606D-C437409C393A}</UniqueIdentifier>
     </Filter>
@@ -427,6 +430,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\BytecodeInterpreter.cpp">
+      <Filter>lc\Source\BytecodeInterpreter</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Compiler.cpp">
       <Filter>lc\Source\Compiler</Filter>
     </ClCompile>
@@ -2340,6 +2346,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\BytecodeInterpreter.h">
+      <Filter>lc\Source\BytecodeInterpreter</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Compiler.h">
       <Filter>lc\Source\Compiler</Filter>
     </ClInclude>
