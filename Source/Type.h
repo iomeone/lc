@@ -46,40 +46,39 @@ struct TSymbol
 	{
 		_sym = s;
 	}
-	//TSymbol& operator=(TSymbol& other)   // do not need to , bcz string has it's copy operator = override.
-	//{
-	//	other._sym = _sym;
-	//}
 	String _sym;
 };
-
-
-
 
 struct TCons;
 struct Code;
 
-using TObj = mapbox::util::variant<TNil*, TInt*, TSymbol*, mapbox::util::recursive_wrapper<Code*>, mapbox::util::recursive_wrapper<TCons*>>;
+using TExpr = mapbox::util::variant<TNil*, TInt*, TSymbol*, mapbox::util::recursive_wrapper<Code*>, mapbox::util::recursive_wrapper<TCons*>>;
 
 
 struct Code
 {
 public:
-    Code(std::vector<uint32> bytecode, std::vector<TObj> consts);
-    
+    Code(std::vector<uint32> bytecode, std::vector<TExpr> consts);
+	
+	Code(const Code & c)
+	{
+		this->_bytecode = c._bytecode;
+		this->_consts = c._consts;
+	}
+
     std::vector<uint32> _bytecode;
-    std::vector<TObj> _consts;
+    std::vector<TExpr> _consts;
 };
 
 struct TCons
 {
-	TCons(TObj h, TObj t)
+	TCons(TExpr h, TExpr t)
 	{
 		_head = h;
 		_tail = t;
 	}
-	TObj _head;
-	TObj _tail;
+	TExpr _head;
+	TExpr _tail;
 };
 
 

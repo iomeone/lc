@@ -9,3 +9,10 @@
 */
 
 #pragma once
+
+
+#include "Type.h"
+
+
+
+TExpr interpret(const Code & c);

@@ -66,7 +66,7 @@ void MainComponent::textEditorTextChanged(juce::TextEditor & e) {
 	{
 		String src = e.getText();
 		Lan lan(src);
-		TObj o = lan.compile();
+		TExpr o = lan.compile();
 
 		String s;
 		lan.getASTStr(o, s);
@@ -78,7 +78,7 @@ void MainComponent::textEditorTextChanged(juce::TextEditor & e) {
 		for_each(c._bytecode.begin(), c._bytecode.end(), [&strByteCode](uint32 bytecode){strByteCode += String::toHexString(bytecode) + " ";});
 		
         // 需要用递归重写
-        for_each(c._consts.begin(), c._consts.end(), [&strConsts](TObj itemConst)
+        for_each(c._consts.begin(), c._consts.end(), [&strConsts](TExpr itemConst)
 		{
 			jassert(itemConst.is<Code*>() || itemConst.is<TInt*>());
 

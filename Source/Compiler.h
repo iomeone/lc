@@ -55,7 +55,7 @@ public:
 	
 	}
 
-	void push_const(TObj obj)
+	void push_const(TExpr obj)
 	{
 		jassert(obj.is<TInt*>() || obj.is<Code*>());
 
@@ -114,7 +114,7 @@ public:
 	}
 
 	std::vector<uint32> bytecode;
-	std::vector<TObj> consts;
+	std::vector<TExpr> consts;
 	std::vector< std::map<String, Arg>> locals;
 
 
@@ -132,5 +132,5 @@ public:
 	int _col;
 };
 
-void compile_(TObj&  obj, Context & ctx, CompileInfo& compileInfo);
-Code compile(TObj& obj, CompileInfo& compileInfo);
+void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo);
+Code compile(TExpr& obj, CompileInfo& compileInfo);

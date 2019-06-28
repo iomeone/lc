@@ -24,10 +24,10 @@ String getSpace(int n)
 
 
 
-std::function<void(TObj&, Context&, CompileInfo&)> compile_platform_plus = [](TObj& obj, Context& ctx, CompileInfo& compileInfo) {
+std::function<void(TExpr&, Context&, CompileInfo&)> compile_platform_plus = [](TExpr& obj, Context& ctx, CompileInfo& compileInfo) {
 
 	jassert(obj.is<TCons*>());
-	TObj& nxt = obj.get<TCons*>()->_tail;   // obj->head is platform+ ,we already know that, so we skip it.
+	TExpr& nxt = obj.get<TCons*>()->_tail;   // obj->head is platform+ ,we already know that, so we skip it.
 
 	while (!nxt.is<TNil*>())
 	{
@@ -44,10 +44,10 @@ std::function<void(TObj&, Context&, CompileInfo&)> compile_platform_plus = [](TO
 					//  question : it seems we need track the number of add argument, the code should be sp -= coutOfArg -1;
 };
 
-int coutOfCons(const TObj & s)
+int coutOfCons(const TExpr & s)
 {
 	int count = 0;
-	TObj t = s;
+	TExpr t = s;
 
 	while (!t.is<TNil*>())
 	{
@@ -58,15 +58,15 @@ int coutOfCons(const TObj & s)
 	return count;
 }
 
-void add_args(const TObj & t, Context& ctx, int& count)
+void add_args(const TExpr & t, Context& ctx, int& count)
 {
 
-	TObj args = t;
+	TExpr args = t;
 	int i = 0;
 	while (!args.is<TNil*>())
 	{
 		jassert(args.is<TCons*>());
-		TObj & a = args.get<TCons*>()->_head;
+		TExpr & a = args.get<TCons*>()->_head;
 
 		jassert(a.is<TSymbol*>());
 
@@ -78,18 +78,18 @@ void add_args(const TObj & t, Context& ctx, int& count)
 
 }
 
-std::function<void(TObj&, Context&, CompileInfo&)> compile_fn = [](TObj&obj, Context&ctx, CompileInfo& compileInfo) {
+std::function<void(TExpr&, Context&, CompileInfo&)> compile_fn = [](TExpr&obj, Context&ctx, CompileInfo& compileInfo) {
 
 	jassert(obj.is<TCons*>());             //  obj must be a list, i.e. an Cons struct
 
-	TObj form = obj.get<TCons*>()->_tail;  // obj->head is an fun string,  just an identify, we skip it.
+	TExpr form = obj.get<TCons*>()->_tail;  // obj->head is an fun string,  just an identify, we skip it.
 
 	jassert(form.is<TCons*>());             // form must also be an cons.  eg.  fun (x y) (+ x y),  nxt now represent (x y) (+ x y) . cert
 
 
 	bool hasName = false;
-	TObj name;
-	//TObj argsCons;
+	TExpr name;
+	//TExpr argsCons;
 
 	if (form.get<TCons*>()->_head.is<TSymbol*>())             // the function has a name.  eg.  fun myadd(x y) (+ x y)
 	{
@@ -101,10 +101,10 @@ std::function<void(TObj&, Context&, CompileInfo&)> compile_fn = [](TObj&obj, Con
 	}
 
 	jassert(form.is<TCons*>());
-	TObj& args = form.get<TCons*>()->_head;
+	TExpr& args = form.get<TCons*>()->_head;
 	jassert(args.is<TCons*>() || args.is<TNil*>());
 
-	TObj& body = form.get<TCons*>()->_tail;
+	TExpr& body = form.get<TCons*>()->_tail;
 
 	int numOfArgs = coutOfCons(args);
 	Context new_ctx(numOfArgs);
@@ -132,7 +132,7 @@ std::function<void(TObj&, Context&, CompileInfo&)> compile_fn = [](TObj&obj, Con
 	compileInfo.log += "\nRet";
 
 	compileInfo.log += "\nLOAD_CONST index:" + String(new_ctx.consts.size());
-	ctx.push_const( TObj( new_ctx.to_code()) );
+	ctx.push_const( TExpr( new_ctx.to_code()) );
 
 	
 
@@ -141,7 +141,7 @@ std::function<void(TObj&, Context&, CompileInfo&)> compile_fn = [](TObj&obj, Con
 
 
 
-std::function<void(TObj&, Context&, CompileInfo& compileInfo)> builtins(String& key)
+std::function<void(TExpr&, Context&, CompileInfo& compileInfo)> builtins(String& key)
 {
 	if (key == "platform+")
 		return compile_platform_plus;
@@ -153,7 +153,7 @@ std::function<void(TObj&, Context&, CompileInfo& compileInfo)> builtins(String& 
 
 
 
-void compile_(TObj&  obj, Context & ctx, CompileInfo& compileInfo)
+void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 {
 	obj.match(
 		
@@ -215,7 +215,7 @@ void compile_(TObj&  obj, Context & ctx, CompileInfo& compileInfo)
 
 		}
 		int cnt = 0;
-		TObj form = e;
+		TExpr form = e;
 
 		while (form.is<TCons*>())
 		{
@@ -247,7 +247,7 @@ void compile_(TObj&  obj, Context & ctx, CompileInfo& compileInfo)
 
 
 
-Code compile(TObj& obj, CompileInfo& compileInfo)
+Code compile(TExpr& obj, CompileInfo& compileInfo)
 {
 	Context ctx{ 0 };
 	auto s = String("");
@@ -261,7 +261,7 @@ Code compile(TObj& obj, CompileInfo& compileInfo)
 
 }
 
-Code::Code(std::vector<uint32> bytecode , std::vector<TObj> consts)
+Code::Code(std::vector<uint32> bytecode , std::vector<TExpr> consts)
 {
 	_bytecode = bytecode;
 	_consts = consts;

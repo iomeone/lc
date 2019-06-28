@@ -95,18 +95,18 @@ public:
     }
 
     
-    TObj  Nil()
+    TExpr  Nil()
     {
         return   (new TNil());
     }
     
-    TObj  Cons(TObj  head, TObj  tail)
+    TExpr  Cons(TExpr  head, TExpr  tail)
     {
         return   (new TCons(head, tail));
     }
-    TObj ListReader( )
+    TExpr ListReader( )
     {
-        std::list<TObj> lst;
+        std::list<TExpr> lst;
         while(true)
         {
             eat_whitespace();
@@ -118,9 +118,9 @@ public:
                 if(c == ')')
                 {
 //                    msg("find )");
-                    TObj acc = Nil();
+                    TExpr acc = Nil();
                 
-                    for_each(lst.begin(), lst.end(), [this, &acc](TObj o)
+                    for_each(lst.begin(), lst.end(), [this, &acc](TExpr o)
                                                                 {
                                                                     // msg("for_each ");
                                                                     acc = this->Cons(o , acc);
@@ -146,7 +146,7 @@ public:
         
     }
     
-    TObj readNumber (char firstChar)
+    TExpr readNumber (char firstChar)
     {
         std::string acc(1, firstChar);
         while (true)
@@ -172,7 +172,7 @@ public:
     
     
     
-    TObj  readSymbol(char firstChar)
+    TExpr  readSymbol(char firstChar)
     {
         std::string acc(1, firstChar);
         while (true)
@@ -194,11 +194,11 @@ public:
         return (new TSymbol(acc));
     }
     
-    std::function<TObj()> getHander(char c)
+    std::function<TExpr()> getHander(char c)
     {
        if( c == '(')
        {
-           std::function<TObj()> h = [this]()
+           std::function<TExpr()> h = [this]()
            {
                return this->ListReader();
            };
@@ -206,7 +206,7 @@ public:
        }
        else if( c == ')')
        {
-		   std::function<TObj()> h = [this]()
+		   std::function<TExpr()> h = [this]()
 		   {
 			   char errorInfo[256];
 			   sprintf(errorInfo, "unexpected ')', line: %ld coloum: %ld", _line, _col);
@@ -221,17 +221,17 @@ public:
     
     
     
-    TObj  readObj()
+    TExpr  readObj()
     {
         eat_whitespace();
         char c;
         if(read(c))
         {
-            std::function<TObj()> fun = getHander(c);
+            std::function<TExpr()> fun = getHander(c);
             if(fun)
             {
 //              msg("call fun");
-                TObj r = fun();
+                TExpr r = fun();
 //              msg("call fun end");
                 return r;
             }
@@ -249,15 +249,15 @@ public:
         return (new TNil());
     }
     
-    TObj compile( )
+    TExpr compile( )
     {
-        TObj obj = readObj();
+        TExpr obj = readObj();
         
         return obj;
     }
     
     
-    void getASTStr(TObj  obj, String& str, int indent = 0)
+    void getASTStr(TExpr  obj, String& str, int indent = 0)
     {
         obj.match( [&str, this, &indent]  (TNil* a)
                    {
