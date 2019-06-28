@@ -122,12 +122,56 @@ public:
 	//std::stack<TExpr, std::vector<TExpr>> stack;
 };
 
+class Numbers
+{
+public:
+	static TExpr add(const TExpr& a, const TExpr b)
+	{
+		jassert(a.is<TInt*>());
 
+		jassert(b.is<TInt*>());
+
+		int ia = a.get<TInt*>()->_val;
+		int ib = b.get<TInt*>()->_val;
+
+		return new TInt(ia + ib);
+	}
+};
 
 TExpr interpret(const Code & code_obj)
 {
 
+	Frame frame(code_obj);
 
+	while (true)
+	{
+		uint32 inst = frame.get_inst();
+		
+		if (inst == INS::LOAD_CONST)
+		{
+			uint32 arg = frame.get_inst();   // arg is the offset of consts, so always be an integer. 
+			frame.push_const(arg);           // get arg from const according offset, then put to the stack.
+			continue;
+		}
+		else if (inst == INS::ADD)
+		{
+			TExpr a = frame.pop(); 
+		
+			TExpr b = frame.pop();
+			
+			frame.push(Numbers::add(a, b));
+			continue;
+		}
+		else if (inst == INS::INVOKE)
+		{
+			uint32 args = frame.get_inst();  // the count of args of the function have.
+			TExpr fn = frame.nth(args - 1);             // we get the fn.(type is TExpr), which is pushed by the LOAD_CONST instruction.
+			jassert(fn.is<Code*>());
+
+			frame.descend(fn, args);          // save current context, and call the subroutinue
+			continue;
+		}
+	}
 
 
 	return new TInt(-1);
