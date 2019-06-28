@@ -171,6 +171,46 @@ TExpr interpret(const Code & code_obj)
 			frame.descend(fn, args);          // save current context, and call the subroutinue
 			continue;
 		}
+		else if (inst == INS::TAIL_CALL)
+		{
+			uint32 args = frame.get_inst();
+			std::vector<TExpr> tmp_args;
+
+			for (uint32 i = 0; i < args; i++)
+			{
+				tmp_args.push_back(frame.pop()); // tmp_args now is ... arg4 arg3 arg2 argFun
+			}
+			TExpr code_obj_exp = tmp_args[args - 1];
+			jassert(code_obj_exp.is<Code*>());
+
+			Code code_obj = *code_obj_exp.get<Code*>();
+
+
+			TExpr old_args_w = frame.pop();
+			jassert(old_args_w.is<TInt*>());
+
+			TExpr old_ip = frame.pop();
+			TExpr old_code = frame.pop();
+
+			for (int i = 0; i < old_args_w.get<TInt*>()->_val; i++)
+				frame.pop();
+
+			for (int i = args - 1; i >= 0; i--)
+			{
+				frame.push(tmp_args[i]);
+			}
+
+			frame.push(old_code);
+
+			frame.push(old_ip);
+			frame.push(new TInt(args));
+
+			frame._code_obj = code_obj;
+			frame.unpack_code_obj();
+			frame.ip = 0;
+			continue;
+		}
+		/*else if()*/
 	}
 
 
