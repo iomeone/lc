@@ -180,7 +180,7 @@ void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 
 		if (iter == ctx.locals.back().end())
 		{
-			sprintf(errorInfo, "undefined symbol %s, line: %ld coloum: %ld", e->_sym, compileInfo._line, compileInfo._col); // TSymbol should contain col and line infomation
+			sprintf(errorInfo, "undefined symbol %s, line: %ld coloum: %ld", e->_sym.toRawUTF8(), compileInfo._line, compileInfo._col); // TSymbol should contain col and line infomation
 			throw std::runtime_error(errorInfo);
 		}
 		else
