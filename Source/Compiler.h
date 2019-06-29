@@ -112,6 +112,18 @@ public:
 			locals.push_back(argMap);
 		}
 	}
+    
+    uint32 label()
+    {
+        uint32 lbl = bytecode.size();
+        bytecode.push_back(99);
+        return lbl;
+    }
+    
+    void mark(uint32 lbl)
+    {
+        bytecode[lbl] = bytecode.size() - lbl;
+    }
 
 	std::vector<uint32> bytecode;
 	std::vector<TExpr> consts;

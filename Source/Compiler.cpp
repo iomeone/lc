@@ -22,6 +22,27 @@ String getSpace(int n)
 	return String::repeatedString("   ", n);
 }
 
+std::function<void(TExpr&, Context&, CompileInfo&)> compile_platform_eq = [](TExpr& obj, Context& ctx, CompileInfo& compileInfo) {
+    
+    jassert(obj.is<TCons*>());
+    TExpr& nxt = obj.get<TCons*>()->_tail;   // obj->head is platform+ ,we already know that, so we skip it.
+    
+    while (!nxt.is<TNil*>())
+    {
+        jassert(nxt.is<TCons*>());            // if nxt is not nil, it must be an another cons expression.
+        
+        compile_(nxt.get<TCons*>()->_head, ctx, compileInfo);
+        nxt = nxt.get<TCons*>()->_tail;
+    }
+    
+    compileInfo.log += "\nEQ";
+    ctx.bytecode.push_back(INS::EQ);
+    
+    ctx.sp -= 1;   //  pop up two integer, and push the result ,  so overall , the stack need substruct 1.
+                   //  question : it seems we need track the number of add argument, the code should be sp -= coutOfArg -1;
+};
+
+
 
 
 std::function<void(TExpr&, Context&, CompileInfo&)> compile_platform_plus = [](TExpr& obj, Context& ctx, CompileInfo& compileInfo) {
@@ -41,7 +62,7 @@ std::function<void(TExpr&, Context&, CompileInfo&)> compile_platform_plus = [](T
 	ctx.bytecode.push_back(INS::ADD);
 
 	ctx.sp -= 1;   //  pop up two integer, and push the result ,  so overall , the stack need substruct 1.    
-					//  question : it seems we need track the number of add argument, the code should be sp -= coutOfArg -1;
+                   //  question : it seems we need track the number of add argument, the code should be sp -= coutOfArg -1;
 };
 
 int coutOfCons(const TExpr & s)
@@ -136,10 +157,43 @@ std::function<void(TExpr&, Context&, CompileInfo&)> compile_fn = [](TExpr&obj, C
 };
 
 
-std::function<void(TExpr&, Context&, CompileInfo&)> compile_if = [](TExpr&obj, Context&ctx, CompileInfo& compileInfo) {
+std::function<void(const TExpr&, Context&, CompileInfo&)> compile_if = [](const TExpr&obj, Context&ctx, CompileInfo& compileInfo) {
+    jassert(obj.is<TCons*>());
+    
+    TExpr form = obj;
+    
+    form = form.get<TCons*>()->_tail;
+    jassert(coutOfCons(form) == 3);
+    jassert(form.is<TCons*>());  // should be TCons type  `(test_expr  (true_expr (false_expr nil)))
+    TExpr testExpr = form.get<TCons*>()->_head;
+    
+    form = form.get<TCons*>()->_tail;
+    jassert(form.is<TCons*>());
+    TExpr thenExpr = form.get<TCons*>()->_head;
+    
+    form = form.get<TCons*>()->_tail;
+     jassert(form.is<TCons*>());
+    TExpr elseExpr = form.get<TCons*>()->_head;
+    
+    ctx.can_tail_call = false;
+    compile_(testExpr, ctx, compileInfo);
+    
+    ctx.bytecode.push_back(INS::COND_BR);
+    ctx.sp -= 1;   // bcz when interpreter COND_BR , we pop the test value and see if it is ture or false.  so the stack must sub 1
+    
+    uint32 cond_lbl = ctx.label();
     
     
+    ctx.can_tail_call = true;
     
+    compile_(thenExpr, ctx, compileInfo);
+    ctx.bytecode.push_back(INS::JMP);
+    ctx.sp -= 1;
+    uint32 else_lbl = ctx.label();
+    
+    ctx.mark(cond_lbl);
+    compile_(elseExpr, ctx, compileInfo);
+    ctx.mark(else_lbl);
 };
 
 
@@ -151,6 +205,8 @@ std::function<void(TExpr&, Context&, CompileInfo& compileInfo)> builtins(String&
 		return compile_fn;
     else if (key == "if")
         return compile_if;
+    else if (key == "platform=")
+        return compile_platform_eq;
 
 	return nullptr;
 }

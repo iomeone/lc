@@ -191,7 +191,14 @@ public:
             else
                 break;
         }
-        return (new TSymbol(acc));
+        if(acc == "true")
+            return new TBool(true);
+        else if(acc == "fasle")
+            return new TBool(false);
+        else if(acc == "nil")
+            return new TNil;
+        else
+            return new TSymbol(acc);
     }
     
     std::function<TExpr()> getHander(char c)
