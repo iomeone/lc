@@ -133,12 +133,14 @@ std::function<void(TExpr&, Context&, CompileInfo&)> compile_fn = [](TExpr&obj, C
 
 	compileInfo.log += "\nLOAD_CONST index:" + String(new_ctx.consts.size());
 	ctx.push_const( TExpr( new_ctx.to_code()) );
-
-	
-
 };
 
 
+std::function<void(TExpr&, Context&, CompileInfo&)> compile_if = [](TExpr&obj, Context&ctx, CompileInfo& compileInfo) {
+    
+    
+    
+};
 
 
 std::function<void(TExpr&, Context&, CompileInfo& compileInfo)> builtins(String& key)
@@ -147,6 +149,8 @@ std::function<void(TExpr&, Context&, CompileInfo& compileInfo)> builtins(String&
 		return compile_platform_plus;
 	else if (key == "fn")
 		return compile_fn;
+    else if (key == "if")
+        return compile_if;
 
 	return nullptr;
 }
@@ -156,8 +160,6 @@ std::function<void(TExpr&, Context&, CompileInfo& compileInfo)> builtins(String&
 void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 {
 	obj.match(
-		
-		
 	[&compileInfo](TNil* a)
 	{
 		//compileInfo.log += "   Nil";
@@ -195,12 +197,15 @@ void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 
 
 	}
+              
 	
     , [&compileInfo](Code* e)
     {
 		compileInfo.log += "\nCode???";
     }
-		, [&compileInfo, &ctx, &obj](TCons* e)
+              
+              
+    , [&compileInfo, &ctx, &obj](TCons* e)
 	{
 		// if is builtins function.
 		if (e->_head.is<TSymbol*>())   // extreamly cool !!!!!!!!!!
@@ -240,8 +245,12 @@ void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 		ctx.bytecode.push_back(cnt);
 		compileInfo.log += String::toHexString(cnt);
 	}
-
-
+              
+              
+    , [&compileInfo](TBool* e)
+    {
+        compileInfo.log += "\nBool";
+    }
 	);
 }
 

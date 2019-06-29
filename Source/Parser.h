@@ -288,6 +288,10 @@ public:
                   {
 //                      str +=   String(e->_sym);
                   }
+                  ,[&str, this, indent]  (TBool* e)
+                  {
+                      
+                  }
                    );                   
     }
     

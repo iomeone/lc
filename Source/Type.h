@@ -40,6 +40,15 @@ struct TInt
 
 };
 
+struct TBool
+{
+    TBool(bool b) : _b(b)
+    {
+        
+    }
+    bool _b;
+};
+
 struct TSymbol
 {
 	TSymbol(String s)
@@ -52,7 +61,7 @@ struct TSymbol
 struct TCons;
 struct Code;
 
-using TExpr = mapbox::util::variant<TNil*, TInt*, TSymbol*, mapbox::util::recursive_wrapper<Code*>, mapbox::util::recursive_wrapper<TCons*>>;
+using TExpr = mapbox::util::variant<TNil*, TInt*, TBool*, TSymbol*, mapbox::util::recursive_wrapper<Code*>, mapbox::util::recursive_wrapper<TCons*>>;
 
 
 struct Code

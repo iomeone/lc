@@ -16,8 +16,10 @@ class Frame
 public:
 	Frame(const Code& code_obj): _code_obj(code_obj)
 	{
-		
-	
+        ip = 0;
+        sp = 0;
+        unpack_code_obj();
+        
 	}
 
 	void unpack_code_obj()
@@ -73,11 +75,14 @@ public:
 	}
 
 
-	TExpr ascend()
+	bool ascend(TExpr& ret_expr)
 	{
 		TExpr ret_val = pop();
 		if (sp == 0)
-			return ret_val;
+        {
+            ret_expr = ret_val;
+            return true;
+        }
 		TExpr w_args = pop();
 		jassert(w_args.is<TInt*>());
 
@@ -97,6 +102,8 @@ public:
 		push(ret_val);
 
 		ip = w_ip.get<TInt*>()->_val;
+        
+        return false;
 	}
 
 	void push_const(uint32 idx)
@@ -136,6 +143,18 @@ public:
 
 		return new TInt(ia + ib);
 	}
+    
+    static TExpr eq(const TExpr& a, const TExpr b)
+    {
+        jassert(a.is<TInt*>());
+        
+        jassert(b.is<TInt*>());
+        
+        int ia = a.get<TInt*>()->_val;
+        int ib = b.get<TInt*>()->_val;
+        
+        return new TBool(ia == ib);
+    }
 };
 
 TExpr interpret(const Code & code_obj)
@@ -210,7 +229,51 @@ TExpr interpret(const Code & code_obj)
 			frame.ip = 0;
 			continue;
 		}
-		/*else if()*/
+        else if(inst == INS::DUP_NTH)
+        {
+            uint32 arg = frame.get_inst();
+            frame.push_nth(arg);
+            continue;
+        }
+        else if(inst == INS::RETURN)
+        {
+            TExpr expr;
+            if(frame.ascend(expr))
+                return expr;
+            else
+                continue;
+        }
+        else if(inst == INS::COND_BR)
+        {
+            TExpr tst = frame.pop();
+            uint32 loc = frame.get_inst();
+            if(tst.is<TBool*>())
+                if(tst.get<TBool*>()->_b == true)
+                    continue;
+            frame.jump_rel(loc);
+            continue;
+        }
+        else if (inst == INS::JMP)
+        {
+            uint32 ip = frame.get_inst();
+            frame.jump_rel(ip);
+            continue;
+        }
+        else if(inst == INS::EQ)
+        {
+            TExpr eq_ret = Numbers::eq(frame.pop(), frame.pop());
+            frame.push(eq_ret);
+            continue;
+        }
+        else
+        {
+            char errorInfo[256];
+           
+            sprintf(errorInfo, "unknow instruction. ip: %d  inst: %d.", frame.ip, inst);
+            
+            throw std::runtime_error(errorInfo);
+        }
+        
 	}
 
 
