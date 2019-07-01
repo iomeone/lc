@@ -10,6 +10,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "MainComponent.h"
+#include "Test.h"
 
 //==============================================================================
 class lcApplication  : public JUCEApplication
@@ -28,6 +29,7 @@ public:
         // This method is where you should put your application's initialisation code..
 
         mainWindow.reset (new MainWindow (getApplicationName()));
+		test();
     }
 
     void shutdown() override

@@ -12,20 +12,17 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Type.h"
-
 #include <list>
 #include <stdexcept>
 #include <stdio.h>
 #include <exception>
 
-
-
-
-
 inline void msg(String s)
 {
 	AlertWindow::showMessageBox(AlertWindow::AlertIconType::InfoIcon, "msg", s, "ok");
 }
+
+
 
 
 class Lan{
@@ -256,7 +253,7 @@ public:
         return (new TNil());
     }
     
-    TExpr compile( )
+    TExpr compile()
     {
         TExpr obj = readObj();
         

@@ -2,6 +2,10 @@
 
 <JUCERPROJECT id="WDtQuB" name="lc" projectType="guiapp" jucerVersion="5.4.3">
   <MAINGROUP id="L1XPcu" name="lc">
+    <GROUP id="{63DE1C28-D53E-BC98-36FA-D147A3ADABE3}" name="Test">
+      <FILE id="PFdrXE" name="Test.cpp" compile="1" resource="0" file="Source/Test.cpp"/>
+      <FILE id="ORGCsa" name="Test.h" compile="0" resource="0" file="Source/Test.h"/>
+    </GROUP>
     <GROUP id="{B5107477-1742-603C-2EE8-EFEE79DECFA8}" name="Source">
       <GROUP id="{376B0A8F-842F-E3E3-29C6-60392F565221}" name="BytecodeInterpreter">
         <FILE id="JZ9rk0" name="BytecodeInterpreter.cpp" compile="1" resource="0"

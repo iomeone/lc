@@ -77,7 +77,7 @@ void MainComponent::textEditorTextChanged(juce::TextEditor & e) {
 		juce::String strByteCode, strConsts;
 		for_each(c._bytecode.begin(), c._bytecode.end(), [&strByteCode](uint32 bytecode){strByteCode += String::toHexString(bytecode) + " ";});
 		
-        // 需要用递归重写
+        // the consts contains Code struct, so need recursively iter
         for_each(c._consts.begin(), c._consts.end(), [&strConsts](TExpr itemConst)
 		{
 			jassert(itemConst.is<Code*>() || itemConst.is<TInt*>());

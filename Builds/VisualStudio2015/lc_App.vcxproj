@@ -140,6 +140,7 @@
     <Lib/>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Test.cpp"/>
     <ClCompile Include="..\..\Source\BytecodeInterpreter.cpp"/>
     <ClCompile Include="..\..\Source\Compiler.cpp"/>
     <ClCompile Include="..\..\Source\LogComponent.cpp"/>
@@ -1901,6 +1902,7 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_opengl.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Test.h"/>
     <ClInclude Include="..\..\Source\BytecodeInterpreter.h"/>
     <ClInclude Include="..\..\Source\Compiler.h"/>
     <ClInclude Include="..\..\Source\Type.h"/>
