@@ -26,7 +26,7 @@ MainComponent::MainComponent()
         e->getEditor()->addListener(this);
 		e->getEditor()->setText("((fn (x y) (platform+ x y)) 1 2)");//(platform+ 6 7)
     }
-     setSize (1200, 800);
+    setSize (1200, 800);
 }
 
 MainComponent::~MainComponent()
