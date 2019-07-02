@@ -91,7 +91,7 @@ void add_args(const TExpr & t, Context& ctx, int& count)
 
 		jassert(a.is<TSymbol*>());
 
-		ctx.add_local(a.get<TSymbol*>()->_sym, Arg(i + 1));
+		ctx.add_local(a.get<TSymbol*>()->_sym, Arg(i + 1, ArgType::TYPE_LOCAL));
 		args = args.get<TCons*>()->_tail;
 		++i;
 	}
@@ -134,7 +134,7 @@ std::function<void(TExpr&, Context&, CompileInfo&)> compile_fn = [](TExpr&obj, C
 	if (hasName)
 	{
 		jassert(name.is<TSymbol*>());
-		new_ctx.add_local(name.get<TSymbol*>()->_sym, Arg(0));
+		new_ctx.add_local(name.get<TSymbol*>()->_sym, Arg(0, ArgType::TYPE_LOCAL));
 	}
 
 	new_ctx.can_tail_call = true;
@@ -234,35 +234,23 @@ void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 	{
 		//compileInfo.log += String(e->_sym);
 		char errorInfo[256];
-		if (ctx.locals.size() > 0)
+		bool bfind = false;
+		Arg arg(-1, ArgType::TYPE_LOCAL);
+		bfind = ctx.get_local(e->_sym, arg);
+		if (bfind)
 		{
-			std::map<String, Arg>::iterator iter = ctx.locals.back().find(e->_sym);
-
-			if (iter == ctx.locals.back().end())
-			{
-				sprintf(errorInfo, "undefined symbol %s, line: %ld coloum: %ld", e->_sym.toRawUTF8(), compileInfo._line, compileInfo._col); // TSymbol should contain col and line infomation
-				throw std::runtime_error(errorInfo);
-			}
-			else
-			{
-				compileInfo.log += "\npush symbol:" + String(e->_sym) + String(" index:") + String::toHexString(iter->second.idx);
-				iter->second.emit(ctx);
-
-			}
+			jassert(arg.idx >= 0);
+			compileInfo.log += "\npush symbol:" + String(e->_sym) + String(" index:") + String::toHexString(arg.idx);
+			ctx.push_arg(arg.idx);
 		}
 		else
 		{
 			sprintf(errorInfo, "undefined symbol %s, line: %ld coloum: %ld", e->_sym.toRawUTF8(), compileInfo._line, compileInfo._col); // TSymbol should contain col and line infomation
 			throw std::runtime_error(errorInfo);
 		}
-
-
-		//sprintf(errorInfo, "can not compile. line: %ld coloum: %ld", compileInfo._line, compileInfo._col); // TSymbol should contain col and line infomation
-		//throw std::runtime_error(errorInfo);
-
-
+	
 	}
-              
+    
 	
     , [&compileInfo](Code* e)
     {
@@ -342,7 +330,3 @@ Code::Code(std::vector<uint32> bytecode , std::vector<TExpr> consts)
 	_consts = consts;
 }
 
-void Arg::emit(Context & ctx)
-{
-	ctx.push_arg(idx);
-}

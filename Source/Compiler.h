@@ -15,29 +15,24 @@
 #include "Type.h"
 
 
-class Context;
 
 
-//class Arg(LocalType) :
-//	def __init__(self, idx) :
-//	self.idx = r_uint(idx)
-//
-//	def emit(self, ctx) :
-//	ctx.push_arg(self.idx)
+
+enum ArgType
+{
+	TYPE_LOCAL = 0,
+	TYPE_CLOSURE
+};
 
 class Arg
 {
-public:
-	Arg(int index): idx(index){}
 
-	void emit(Context& ctx);
+public:
+	Arg(int index, ArgType type) : idx(index), _t(type)  {}
 
 	int idx{ 0 };
+	ArgType _t{ TYPE_LOCAL };
 };
-
-
-
-
 
 
 class Context {
@@ -98,7 +93,8 @@ public:
 
 	void add_local(String& argName, Arg arg) //test  Arg&  or  Arg ?
 	{
-		size_t len = locals.size();
+		locals.push_back(SymbolArg(argName, arg, Uuid()));
+		/*size_t len = locals.size();
 		if (len >= 1)
 		{
 			auto lastItem = locals.back();
@@ -110,7 +106,7 @@ public:
 			std::map<String, Arg> argMap;
 			argMap.emplace(argName, arg);
 			locals.push_back(argMap);
-		}
+		}*/
 	}
     
     uint32 label()
@@ -125,9 +121,58 @@ public:
         bytecode[lbl] = bytecode.size() - lbl;
     }
 
+	bool get_local(String s_name, Arg& arg_out)
+	{
+		bool res = false;
+
+		for_each(locals.begin(), locals.end(), [&arg_out, &res, &s_name](SymbolArg sa)
+		{
+			if (s_name == sa._sym)
+			{
+				res = true;
+				arg_out = sa._arg;
+			}
+			
+		});
+		return res;
+
+	/*	if (locals.size() > 0)
+		{
+			std::map<String, Arg>::iterator iter = locals.back().find(s_name);
+
+			if (iter == locals.back().end())
+			{
+				return false;
+			}
+			else
+			{
+				arg_out = iter->second;
+				return true;
+			
+			}
+		}
+		else 
+			return false;*/
+	}
+	struct SymbolArg
+	{
+		SymbolArg(String sym, Arg arg, Uuid id) :_sym(sym), _arg(arg), _id(id)
+		{
+
+		}
+		bool operator== ( const SymbolArg & SymbolArg2) 
+		{
+			return _id == SymbolArg2._id;
+		}
+
+		String _sym;
+		Arg  _arg;
+		Uuid  _id;
+	};
+
 	std::vector<uint32> bytecode;
 	std::vector<TExpr> consts;
-	std::vector< std::map<String, Arg>> locals;
+	std::vector<SymbolArg> locals;
 
 
 	uint32 sp;

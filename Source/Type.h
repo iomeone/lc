@@ -24,7 +24,10 @@ enum INS
 	DUP_NTH,
 	RETURN,
 	COND_BR,
-	JMP
+	JMP,
+	CLOSED_OVER,
+	MAKE_CLOSURE,
+	POP
 };
 
 
@@ -58,6 +61,13 @@ struct TSymbol
 	String _sym;
 };
 
+struct TClosure
+{
+	TClosure(int index) : idx(index) {}
+
+	int idx{ 0 };
+};
+
 struct TCons;
 struct Code;
 
@@ -79,6 +89,14 @@ public:
     std::vector<TExpr> _consts;
 };
 
+
+//class Closure
+//{
+//public:
+//	Closure(Code& code, )
+//};
+
+
 struct TCons
 {
 	TCons(TExpr h, TExpr t)
@@ -89,6 +107,4 @@ struct TCons
 	TExpr _head;
 	TExpr _tail;
 };
-
-
 
