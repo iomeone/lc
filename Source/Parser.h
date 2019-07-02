@@ -190,7 +190,7 @@ public:
         }
         if(acc == "true")
             return new TBool(true);
-        else if(acc == "fasle")
+        else if(acc == "false")
             return new TBool(false);
         else if(acc == "nil")
             return new TNil;

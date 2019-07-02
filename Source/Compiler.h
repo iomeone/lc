@@ -57,7 +57,7 @@ public:
 
 	void push_const(TExpr obj)
 	{
-		jassert(obj.is<TInt*>() || obj.is<Code*>());
+		jassert(obj.is<TInt*>() || obj.is<Code*>() || obj.is<TBool*>());
 
 		size_t idx = consts.size();
 

@@ -249,11 +249,19 @@ TExpr interpret(const Code & code_obj)
         else if(inst == INS::COND_BR)
         {
             TExpr tst = frame.pop();
-            uint32 loc = frame.get_inst();
-            if(tst.is<TBool*>())
-                if(tst.get<TBool*>()->_b == true)
-                    continue;
-            frame.jump_rel(loc);
+            uint32 loc = frame.get_inst();  // loc is the else loc
+			if (tst.is<TBool*>())
+			{
+				if (tst.get<TBool*>()->_b != false)
+				{
+					continue;
+				}
+				else
+				{
+					frame.jump_rel(loc);
+				}
+					
+			}
             continue;
         }
         else if (inst == INS::JMP)

@@ -114,13 +114,13 @@ std::function<void(TExpr&, Context&, CompileInfo&)> compile_fn = [](TExpr&obj, C
 
 	if (form.get<TCons*>()->_head.is<TSymbol*>())             // the function has a name.  eg.  fun myadd(x y) (+ x y)
 	{
-		//hasName = true;
+		hasName = true;
 
 		name = form.get<TCons*>()->_head;	 // nameObj.get<TSymbol*>()->_sym;
 
 		form = form.get<TCons*>()->_tail;
 	}
-
+	
 	jassert(form.is<TCons*>());
 	TExpr& args = form.get<TCons*>()->_head;
 	jassert(args.is<TCons*>() || args.is<TNil*>());
@@ -234,19 +234,28 @@ void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 	{
 		//compileInfo.log += String(e->_sym);
 		char errorInfo[256];
-		std::map<String, Arg>::iterator iter = ctx.locals.back().find(e->_sym);
+		if (ctx.locals.size() > 0)
+		{
+			std::map<String, Arg>::iterator iter = ctx.locals.back().find(e->_sym);
 
-		if (iter == ctx.locals.back().end())
+			if (iter == ctx.locals.back().end())
+			{
+				sprintf(errorInfo, "undefined symbol %s, line: %ld coloum: %ld", e->_sym.toRawUTF8(), compileInfo._line, compileInfo._col); // TSymbol should contain col and line infomation
+				throw std::runtime_error(errorInfo);
+			}
+			else
+			{
+				compileInfo.log += "\npush symbol:" + String(e->_sym) + String(" index:") + String::toHexString(iter->second.idx);
+				iter->second.emit(ctx);
+
+			}
+		}
+		else
 		{
 			sprintf(errorInfo, "undefined symbol %s, line: %ld coloum: %ld", e->_sym.toRawUTF8(), compileInfo._line, compileInfo._col); // TSymbol should contain col and line infomation
 			throw std::runtime_error(errorInfo);
 		}
-		else
-		{		
-			compileInfo.log += "\npush symbol:" + String(e->_sym) + String(" index:") + String::toHexString(iter->second.idx);
-			iter->second.emit(ctx);
-		
-		}
+
 
 		//sprintf(errorInfo, "can not compile. line: %ld coloum: %ld", compileInfo._line, compileInfo._col); // TSymbol should contain col and line infomation
 		//throw std::runtime_error(errorInfo);
@@ -303,9 +312,10 @@ void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 	}
               
               
-    , [&compileInfo](TBool* e)
+    , [&compileInfo, &ctx](TBool* e)
     {
-        compileInfo.log += "\nBool";
+		ctx.push_const(e);
+		compileInfo.log += "\nLOAD_CONST_BOOL index:" + String(ctx.consts.size()) + String(" val:") + String(e->_b ? "True" : "False");
     }
 	);
 }
