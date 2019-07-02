@@ -23,9 +23,6 @@ bool testOnce(String sourceCode, TExpr expectedVal)
 		
 		Lan lan(sourceCode);
 		TExpr o = lan.compile();
-		
-	/*	String s;
-		lan.getASTStr(o, s);*/
 
 		CompileInfo compileInfo;
 		Code c = compile(o, compileInfo);
