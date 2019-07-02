@@ -64,7 +64,8 @@ public:
 	{
 		jassert(code_obj.is<Code*>());
 
-		push(code_obj);
+		Code * c = new Code(_code_obj);
+		push(c);
 		push(new TInt(ip));
 		push(new TInt(args));
 
@@ -91,6 +92,8 @@ public:
 
 		TExpr code_obj = pop();
 		jassert(code_obj.is<Code*>());
+		_code_obj = *(code_obj.get<Code*>());
+		delete code_obj.get<Code*>();
 
 		for (int i = 0; i < w_args.get<TInt*>()->_val; i++)
 		{

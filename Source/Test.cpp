@@ -49,8 +49,8 @@ bool testOnce(String sourceCode, int expectedVal)
 
 std::vector<std::pair<String, int>> source = {
 	{"(platform+ 3 7)", 10}
-
-
+	,{"((fn (x y) (platform+ x y)) 1 2)", 3}
+	
 };
 
 
