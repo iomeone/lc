@@ -91,7 +91,7 @@ void add_args(const TExpr & t, Context& ctx, int& count)
 
 		jassert(a.is<TSymbol*>());
 
-		ctx.add_local(a.get<TSymbol*>()->_sym, Arg(i + 1, ArgType::TYPE_LOCAL));
+		ctx.add_local(a.get<TSymbol*>()->_sym, Arg(i + 1));
 		args = args.get<TCons*>()->_tail;
 		++i;
 	}
@@ -134,7 +134,7 @@ std::function<void(TExpr&, Context&, CompileInfo&)> compile_fn = [](TExpr&obj, C
 	if (hasName)
 	{
 		jassert(name.is<TSymbol*>());
-		new_ctx.add_local(name.get<TSymbol*>()->_sym, Arg(0, ArgType::TYPE_LOCAL));
+		new_ctx.add_local(name.get<TSymbol*>()->_sym, Arg(0));
 	}
 
 	new_ctx.can_tail_call = true;
@@ -213,6 +213,19 @@ std::function<void(TExpr&, Context&, CompileInfo& compileInfo)> builtins(String&
 
 
 
+void ArgEmit(Context& ctx, int idx)
+{
+	ctx.push_arg(idx);
+}
+
+void ClosureEmit(Context& ctx, int idx)
+{
+	ctx.bytecode.push_back(INS::CLOSED_OVER);
+	ctx.bytecode.push_back(idx);
+	ctx.sp += 1;
+}
+
+
 void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 {
 	obj.match(
@@ -235,13 +248,27 @@ void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 		//compileInfo.log += String(e->_sym);
 		char errorInfo[256];
 		bool bfind = false;
-		Arg arg(-1, ArgType::TYPE_LOCAL);
+		ArgOrClosure arg = Arg(-1);
 		bfind = ctx.get_local(e->_sym, arg);
 		if (bfind)
 		{
-			jassert(arg.idx >= 0);
-			compileInfo.log += "\npush symbol:" + String(e->_sym) + String(" index:") + String::toHexString(arg.idx);
-			ctx.push_arg(arg.idx);
+			if (arg.is<Arg>())
+			{
+				jassert(arg.get<Arg>().idx >= 0);
+				compileInfo.log += "\npush symbol:" + String(e->_sym) + String(" index:") + String::toHexString(arg.get<Arg>().idx);
+
+				ArgEmit(ctx, arg.get<Arg>().idx);
+				//ctx.push_arg(arg.get<Arg>().idx);
+			}
+			else if (arg.is<Closure>())
+			{
+				jassert(arg.get<Closure>().local.idx >= 0);
+				compileInfo.log += "\npush symbol:" + String(e->_sym) + String(" index:") + String::toHexString(arg.get<Closure>().local.idx);
+
+				ClosureEmit(ctx, arg.get<Closure>().local.idx);
+				//ctx.push_arg(arg.get<Closure>().local.idx);
+			}
+
 		}
 		else
 		{

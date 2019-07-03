@@ -16,24 +16,24 @@
 
 
 
-
-
-enum ArgType
+struct Arg
 {
-	TYPE_LOCAL = 0,
-	TYPE_CLOSURE
-};
-
-class Arg
-{
-
-public:
-	Arg(int index, ArgType type) : idx(index), _t(type)  {}
-
+	Arg(int index) : idx(index) 
+	{
+	}
 	int idx{ 0 };
-	ArgType _t{ TYPE_LOCAL };
 };
 
+
+struct Closure
+{
+	Closure(Arg a) : local(a.idx)
+	{
+	}
+	Arg local;
+};
+
+using ArgOrClosure = mapbox::util::variant<Arg, Closure>;
 
 class Context {
 
@@ -93,7 +93,7 @@ public:
 
 	void add_local(String& argName, Arg arg) //test  Arg&  or  Arg ?
 	{
-		locals.push_back(SymbolArg(argName, arg, Uuid()));
+		locals.push_back(Symbol_ArgOrClosure(argName, arg));
 		/*size_t len = locals.size();
 		if (len >= 1)
 		{
@@ -121,11 +121,11 @@ public:
         bytecode[lbl] = bytecode.size() - lbl;
     }
 
-	bool get_local(String s_name, Arg& arg_out)
+	bool get_local(String s_name, ArgOrClosure& arg_out)
 	{
 		bool res = false;
 
-		for_each(locals.begin(), locals.end(), [&arg_out, &res, &s_name](SymbolArg sa)
+		for_each(locals.begin(), locals.end(), [&arg_out, &res, &s_name](Symbol_ArgOrClosure sa)
 		{
 			if (s_name == sa._sym)
 			{
@@ -154,25 +154,24 @@ public:
 		else 
 			return false;*/
 	}
-	struct SymbolArg
+	struct Symbol_ArgOrClosure
 	{
-		SymbolArg(String sym, Arg arg, Uuid id) :_sym(sym), _arg(arg), _id(id)
+		Symbol_ArgOrClosure(String sym, Arg arg) :_sym(sym), _arg(arg)
 		{
 
-		}
-		bool operator== ( const SymbolArg & SymbolArg2) 
-		{
-			return _id == SymbolArg2._id;
 		}
 
 		String _sym;
-		Arg  _arg;
-		Uuid  _id;
+		ArgOrClosure  _arg;
 	};
+
+
 
 	std::vector<uint32> bytecode;
 	std::vector<TExpr> consts;
-	std::vector<SymbolArg> locals;
+	std::vector<Symbol_ArgOrClosure> locals;
+
+	std::vector<ArgOrClosure> closed_overs;
 
 
 	uint32 sp;
@@ -191,3 +190,8 @@ public:
 
 void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo);
 Code compile(TExpr& obj, CompileInfo& compileInfo);
+
+
+void ClosureEmit(Context& ctx, int idx);
+
+void ArgEmit(Context& ctx, int idx);
