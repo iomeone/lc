@@ -18,30 +18,71 @@
 
 struct Arg
 {
-	Arg(int index) : idx(index) 
+	Arg(int index, Uuid uid) : idx(index)  , _uid(uid)
 	{
 	}
 	int idx{ 0 };
+	Uuid _uid;
 };
 
 
 struct Closure
 {
-	Closure(Arg a) : local(a.idx)
+	Closure(Arg a) : local(a.idx, a._uid)
 	{
 	}
 	Arg local;
 };
 
-using ArgOrClosure = mapbox::util::variant<Arg, Closure>;
+struct ClosureCell
+{
+	ClosureCell(int index) : _idx(index)
+	{
+
+	}
+
+	int _idx;
+};
+
+using ArgOrClosure = mapbox::util::variant<Arg, Closure, ClosureCell>;
 
 class Context {
+public:
+	struct Symbol_ArgOrClosure
+	{
+		Symbol_ArgOrClosure(String sym, Arg arg) :_sym(sym), _arg(arg)
+		{
+
+		}
+
+		String _sym;
+		ArgOrClosure  _arg;
+	};
+
 
 public:
 
-	Context(uint32 argc) : sp(argc + 3)  // the saved context ocupy 3 spaces.
+	Context(uint32 argc, const std::vector<Symbol_ArgOrClosure>& parentlocals) : sp(argc + 3)  // the saved context ocupy 3 spaces.
 	{
-
+		for_each(parentlocals.begin(), parentlocals.end(), [this](Symbol_ArgOrClosure o)
+		{
+		
+			Symbol_ArgOrClosure c = o;
+			if (c._arg.is<Arg>())
+			{
+				c._arg = Closure(c._arg.get<Arg>());
+			}
+			else if (c._arg.is<Closure>())
+			{
+				jassert(false);  // if have two closure, could happen?
+			}
+			else if (c._arg.is<ClosureCell>())
+			{
+				msg("c._arg.is<ClosureCell>()???");
+			}
+			
+			this->locals.push_back(c);
+		});
 	}
 
 	Code* to_code()
@@ -125,14 +166,32 @@ public:
 	{
 		bool res = false;
 
-		for_each(locals.begin(), locals.end(), [&arg_out, &res, &s_name](Symbol_ArgOrClosure sa)
+		for_each(locals.begin(), locals.end(), [&arg_out, &res, &s_name, this](Symbol_ArgOrClosure sa)
 		{
 			if (s_name == sa._sym)
 			{
-				res = true;
-				arg_out = sa._arg;
+
+				if (sa._arg.is<Closure>())
+				{
+					int idx = 0;
+					for (int i = 0; i < closed_overs.size(); i++)
+					{
+						jassert(closed_overs[i].is<Arg>());
+
+						if (closed_overs[i].get<Arg>()._uid == sa._arg.get<Closure>().local._uid)
+							break;
+						else
+							++idx;
+					}
+					closed_overs.push_back(sa._arg.get<Closure>().local);  // returen an arg object, which will push the value which is a closure value to the stack.
+					arg_out = ClosureCell(idx);
+				}
+				else
+				{
+					res = true;
+					arg_out = sa._arg;
+				}
 			}
-			
 		});
 		return res;
 
@@ -154,16 +213,7 @@ public:
 		else 
 			return false;*/
 	}
-	struct Symbol_ArgOrClosure
-	{
-		Symbol_ArgOrClosure(String sym, Arg arg) :_sym(sym), _arg(arg)
-		{
 
-		}
-
-		String _sym;
-		ArgOrClosure  _arg;
-	};
 
 
 

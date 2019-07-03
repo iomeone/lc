@@ -81,7 +81,6 @@ int coutOfCons(const TExpr & s)
 
 void add_args(const TExpr & t, Context& ctx, int& count)
 {
-
 	TExpr args = t;
 	int i = 0;
 	while (!args.is<TNil*>())
@@ -91,7 +90,7 @@ void add_args(const TExpr & t, Context& ctx, int& count)
 
 		jassert(a.is<TSymbol*>());
 
-		ctx.add_local(a.get<TSymbol*>()->_sym, Arg(i + 1));
+		ctx.add_local(a.get<TSymbol*>()->_sym, Arg(i + 1, Uuid()));
 		args = args.get<TCons*>()->_tail;
 		++i;
 	}
@@ -128,13 +127,13 @@ std::function<void(TExpr&, Context&, CompileInfo&)> compile_fn = [](TExpr&obj, C
 	TExpr& body = form.get<TCons*>()->_tail;
 
 	int numOfArgs = coutOfCons(args);
-	Context new_ctx(numOfArgs);
+	Context new_ctx(numOfArgs, ctx.locals);
 	add_args(args, new_ctx, numOfArgs);
 
 	if (hasName)
 	{
 		jassert(name.is<TSymbol*>());
-		new_ctx.add_local(name.get<TSymbol*>()->_sym, Arg(0));
+		new_ctx.add_local(name.get<TSymbol*>()->_sym, Arg(0, Uuid()));
 	}
 
 	new_ctx.can_tail_call = true;
@@ -248,7 +247,7 @@ void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 		//compileInfo.log += String(e->_sym);
 		char errorInfo[256];
 		bool bfind = false;
-		ArgOrClosure arg = Arg(-1);
+		ArgOrClosure arg = Arg(-1, Uuid());
 		bfind = ctx.get_local(e->_sym, arg);
 		if (bfind)
 		{
@@ -262,11 +261,21 @@ void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 			}
 			else if (arg.is<Closure>())
 			{
-				jassert(arg.get<Closure>().local.idx >= 0);
-				compileInfo.log += "\npush symbol:" + String(e->_sym) + String(" index:") + String::toHexString(arg.get<Closure>().local.idx);
+				jassert(false);
+				msg("arg.is<Closure>()???");
+				
+			}
+			else if (arg.is<ClosureCell>())
+			{
 
-				ClosureEmit(ctx, arg.get<Closure>().local.idx);
-				//ctx.push_arg(arg.get<Closure>().local.idx);
+				jassert(arg.get<ClosureCell>()._idx >= 0);
+				compileInfo.log += "\npush symbol:" + String(e->_sym) + String(" index:") + String::toHexString(arg.get<ClosureCell>()._idx);
+				ClosureEmit(ctx, arg.get<ClosureCell>()._idx);
+
+			}
+			else
+			{
+				msg("???");
 			}
 
 		}
@@ -339,7 +348,8 @@ void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 
 Code compile(TExpr& obj, CompileInfo& compileInfo)
 {
-	Context ctx{ 0 };
+	std::vector<Context::Symbol_ArgOrClosure> l;
+	Context ctx(0, l);
 	auto s = String("");
 	compile_(obj, ctx, compileInfo);
 

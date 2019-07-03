@@ -17,10 +17,7 @@
 #include <stdio.h>
 #include <exception>
 
-inline void msg(String s)
-{
-	AlertWindow::showMessageBox(AlertWindow::AlertIconType::InfoIcon, "msg", s, "ok");
-}
+
 
 
 
