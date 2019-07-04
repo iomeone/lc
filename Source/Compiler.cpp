@@ -294,7 +294,7 @@ void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 			}
 			else if (arg.is<Closure>())
 			{
-				jassert(false);
+				jassertfalse;
 				msg("arg.is<Closure>()???");
 				
 			}
@@ -308,6 +308,7 @@ void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 			}
 			else
 			{
+				jassertfalse;
 				msg("???");
 			}
 

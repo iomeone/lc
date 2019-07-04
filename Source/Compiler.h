@@ -185,11 +185,17 @@ public:
 					}
 					closed_overs.push_back(sa._arg.get<Closure>().local);  // returen an arg object, which will push the value which is a closure value to the stack.
 					arg_out = ClosureCell(idx);
+					res = true;
 				}
-				else
+				else if(sa._arg.is<Arg>())
 				{
 					res = true;
 					arg_out = sa._arg;
+				}
+				else
+				{
+					jassertfalse;
+					msg("what's the type of arg?");
 				}
 			}
 		});

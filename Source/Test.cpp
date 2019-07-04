@@ -59,14 +59,14 @@ bool testOnce(String sourceCode, TExpr expectedVal)
 
 std::vector<std::pair<String, TExpr>> source = {
 	{"((fn (x) ((fn () x))) 42)", new TInt(42)}
-	//,{"((fn rf (x) (if (platform= x 10)  x (rf (platform+ x 1)))) 0)", new TInt(10)}
-	//,{"(platform= 1 1)", new TBool(true)}
-	//,{"(platform= 1 2)",new TBool(false)}
-	//,{"(if 1 2 3)", new TInt(2)}
-	//,{"(if false 2 3)" ,new TInt(3)}
-	//,{"(platform+ 3 7)", new TInt(10)}
-	//,{"((fn (x y) (platform+ x y)) 1 2)",new TInt(3)}
-	//,{"(if (platform= 1 2) true false)",new TBool(false)}
+	,{"((fn rf (x) (if (platform= x 10)  x (rf (platform+ x 1)))) 0)", new TInt(10)}
+	,{"(platform= 1 1)", new TBool(true)}
+	,{"(platform= 1 2)",new TBool(false)}
+	,{"(if 1 2 3)", new TInt(2)}
+	,{"(if false 2 3)" ,new TInt(3)}
+	,{"(platform+ 3 7)", new TInt(10)}
+	,{"((fn (x y) (platform+ x y)) 1 2)",new TInt(3)}
+	,{"(if (platform= 1 2) true false)",new TBool(false)}
 	
 };
 
