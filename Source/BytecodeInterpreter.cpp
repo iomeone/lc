@@ -315,7 +315,6 @@ TExpr interpret(const Code & code_obj)
 			jassert(frame._code_obj.is<SavedClosure*>());
 			int idx = frame.get_inst();
 			frame.push(frame.closed_overs[idx]);
-
 		}
 		else if(inst == INS::MAKE_CLOSURE)
 		{
