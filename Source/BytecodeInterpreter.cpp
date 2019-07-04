@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    BytecodeInterpreter.cpp
-    Created: 28 Jun 2019 9:59:03am
-    Author:  user
+	BytecodeInterpreter.cpp
+	Created: 28 Jun 2019 9:59:03am
+	Author:  user
 
   ==============================================================================
 */
@@ -11,21 +11,38 @@
 #include "BytecodeInterpreter.h"
 #include <stack>  
 
+
+//mapbox::util::recursive_wrapper<Code*>,
+//mapbox::util::recursive_wrapper<SavedClosure*>,
 class Frame
 {
 public:
-	Frame(const Code& code_obj): _code_obj(code_obj)
+	Frame(const TExpr& code_obj) : _code_obj(code_obj)
 	{
-        ip = 0;
-        sp = 0;
-        unpack_code_obj();
-        
+		ip = 0;
+		sp = 0;
+		unpack_code_obj();
+		closed_overs.clear();
 	}
 
 	void unpack_code_obj()
 	{
-		this->_consts = _code_obj._consts;
-		this->_bytecode = _code_obj._bytecode;
+		if (_code_obj.is< Code*>())
+		{
+			this->_consts = _code_obj.get<Code*>()->_consts;
+			this->_bytecode = _code_obj.get<Code*>()->_bytecode;
+		}
+		else if(_code_obj.is<SavedClosure*>())
+		{
+			this->_consts = _code_obj.get<SavedClosure*>()->_code._consts;
+			this->_bytecode = _code_obj.get<SavedClosure*>()->_code._bytecode;
+			this->closed_overs = _code_obj.get<SavedClosure*>()->closed_overs;
+		}
+		else
+		{
+			jassertfalse;
+		}
+			
 	}
 
 	uint32 get_inst()
@@ -62,14 +79,29 @@ public:
 
 	void descend( TExpr  code_obj, uint32 args)
 	{
-		jassert(code_obj.is<Code*>());
+		jassert(code_obj.is<Code*>()  || 
+				code_obj.is<SavedClosure*>());
 
-		Code * c = new Code(_code_obj);
-		push(c);
+		TExpr  c;
+		if (code_obj.is<Code*>())
+		{
+			c = new Code(*code_obj.get<Code*>());
+		}
+		else if (code_obj.is<SavedClosure*>())
+		{
+			c = new SavedClosure(*code_obj.get<SavedClosure*>());
+		}
+		else
+		{
+			jassertfalse;
+			msg("the save data must be code or closure!");
+		}
+
+		push(this->_code_obj);
 		push(new TInt(ip));
 		push(new TInt(args));
 
-		_code_obj = *code_obj.get<Code*>();
+		_code_obj = code_obj;// *code_obj.get<Code*>();
 		unpack_code_obj();
 		ip = 0;
 
@@ -91,9 +123,9 @@ public:
 		jassert(w_ip.is<TInt*>());
 
 		TExpr code_obj = pop();
-		jassert(code_obj.is<Code*>());
-		_code_obj = *(code_obj.get<Code*>());
-		delete code_obj.get<Code*>();
+		jassert(code_obj.is<Code*>() || code_obj.is<SavedClosure*>());
+		_code_obj = code_obj;
+		//delete code_obj.get<Code*>();
 
 		for (int i = 0; i < w_args.get<TInt*>()->_val; i++)
 		{
@@ -120,7 +152,7 @@ public:
 	}
 
 
-	Code _code_obj;
+	TExpr _code_obj; // 
 
 	std::vector<uint32> _bytecode;
 	std::vector<TExpr> _consts;
@@ -129,6 +161,8 @@ public:
 	uint32 sp;
 	uint32 ip;
 	TExpr stack[24];
+
+	std::vector<TExpr> closed_overs;
 	//std::stack<TExpr, std::vector<TExpr>> stack;
 };
 
@@ -163,7 +197,7 @@ public:
 TExpr interpret(const Code & code_obj)
 {
 
-	Frame frame(code_obj);
+	Frame frame(new Code(code_obj));
 
 	while (true)
 	{
@@ -203,9 +237,9 @@ TExpr interpret(const Code & code_obj)
 				tmp_args.push_back(frame.pop()); // tmp_args now is ... arg4 arg3 arg2 argFun
 			}
 			TExpr code_obj_exp = tmp_args[args - 1];
-			jassert(code_obj_exp.is<Code*>());
+			jassert(code_obj_exp.is<Code*>() || code_obj_exp.is<SavedClosure*>());
 
-			Code code_obj = *code_obj_exp.get<Code*>();
+			TExpr code_obj = code_obj_exp;
 
 
 			TExpr old_args_w = frame.pop();

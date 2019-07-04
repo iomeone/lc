@@ -293,7 +293,11 @@ public:
                   {
                       
                   }
-                   );                   
+				 , [&str, this, indent](SavedClosure* e)
+				  {
+					  jassertfalse;
+				  }
+                  );                   
     }
     
     

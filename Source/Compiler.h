@@ -74,7 +74,7 @@ public:
 			}
 			else if (c._arg.is<Closure>())
 			{
-				jassert(false);  // if have two closure, could happen?
+				jassert(false);  // if have two nested closure, could happen?
 			}
 			else if (c._arg.is<ClosureCell>())
 			{

@@ -152,7 +152,37 @@ std::function<void(TExpr&, Context&, CompileInfo&)> compile_fn = [](TExpr&obj, C
 	compileInfo.log += "\nRet";
 
 	compileInfo.log += "\nLOAD_CONST index:" + String(new_ctx.consts.size());
-	ctx.push_const( TExpr( new_ctx.to_code()) );
+
+	std::vector<ArgOrClosure> closed_overs = new_ctx.closed_overs;
+
+	ctx.push_const(TExpr(new_ctx.to_code()));
+	if (closed_overs.size() == 0)
+	{
+		
+	}
+	else
+	{
+		for_each(closed_overs.begin(), closed_overs.end(), [&ctx](ArgOrClosure arg)  
+		{
+			if (arg.is<Arg>())
+			{
+				ArgEmit(ctx, arg.get<Arg>().idx);
+			}
+			else if (arg.is<Closure>())
+			{
+				jassert(false);   // the item which the closed_overs saved should be type of Arg???  if in nested closure, this could be Closure, so we just need call ClosureEmit ?
+			}
+			else
+			{
+				jassert(false);  // shouldn't happen.
+			}
+			
+		});
+
+		ctx.bytecode.push_back(INS::MAKE_CLOSURE);
+		ctx.bytecode.push_back(closed_overs.size());
+		ctx.sp -= closed_overs.size();
+	}
 };
 
 
@@ -232,7 +262,10 @@ void compile_(TExpr&  obj, Context & ctx, CompileInfo& compileInfo)
 	{
 		//compileInfo.log += "   Nil";
 	}
-	
+	,[&compileInfo](SavedClosure* e)
+	{
+		jassertfalse;
+	}
 		
 	, [&compileInfo, &ctx](TInt* e)
 	{

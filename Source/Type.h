@@ -70,8 +70,11 @@ struct TClosure
 
 struct TCons;
 struct Code;
-
-using TExpr = mapbox::util::variant<TNil*, TInt*, TBool*, TSymbol*, mapbox::util::recursive_wrapper<Code*>, mapbox::util::recursive_wrapper<TCons*>>;
+struct SavedClosure;
+using TExpr = mapbox::util::variant<TNil*, TInt*, TBool*, TSymbol*, 
+	mapbox::util::recursive_wrapper<Code*>, 
+	mapbox::util::recursive_wrapper<SavedClosure*>,
+	mapbox::util::recursive_wrapper<TCons*>>;
 
 
 struct Code
@@ -90,11 +93,24 @@ public:
 };
 
 
-//class Closure
-//{
-//public:
-//	Closure(Code& code, )
-//};
+struct SavedClosure
+{
+public:
+	SavedClosure(const SavedClosure& other):_code(other._code), closed_overs(other.closed_overs)
+	{
+	 
+	}
+	SavedClosure(Code& code) : _code(code)
+	{
+
+	}
+	std::vector<TExpr> closed_overs;
+	Code _code;
+};
+
+
+
+
 
 
 struct TCons
