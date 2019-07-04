@@ -10,7 +10,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "BytecodeInterpreter.h"
 #include <stack>  
-
+#include <list>
 
 //mapbox::util::recursive_wrapper<Code*>,
 //mapbox::util::recursive_wrapper<SavedClosure*>,
@@ -203,13 +203,13 @@ TExpr interpret(const Code & code_obj)
 	{
 		uint32 inst = frame.get_inst();
 		
-		if (inst == INS::LOAD_CONST)
+		if(inst == INS::LOAD_CONST)
 		{
 			uint32 arg = frame.get_inst();   // arg is the offset of consts, so always be an integer. 
 			frame.push_const(arg);           // get arg from const according offset, then put to the stack.
 			continue;
 		}
-		else if (inst == INS::ADD)
+		else if(inst == INS::ADD)
 		{
 			TExpr a = frame.pop(); 
 		
@@ -218,7 +218,7 @@ TExpr interpret(const Code & code_obj)
 			frame.push(Numbers::add(a, b));
 			continue;
 		}
-		else if (inst == INS::INVOKE)
+		else if(inst == INS::INVOKE)
 		{
 			uint32 args = frame.get_inst();  // the count of args of the function have.
 			TExpr fn = frame.nth(args - 1);             // we get the fn.(type is TExpr), which is pushed by the LOAD_CONST instruction.
@@ -227,7 +227,7 @@ TExpr interpret(const Code & code_obj)
 			frame.descend(fn, args);          // save current context, and call the subroutinue
 			continue;
 		}
-		else if (inst == INS::TAIL_CALL)
+		else if(inst == INS::TAIL_CALL)
 		{
 			uint32 args = frame.get_inst();
 			std::vector<TExpr> tmp_args;
@@ -298,7 +298,7 @@ TExpr interpret(const Code & code_obj)
 			}
             continue;
         }
-        else if (inst == INS::JMP)
+        else if(inst == INS::JMP)
         {
             uint32 ip = frame.get_inst();
             frame.jump_rel(ip);
@@ -310,6 +310,30 @@ TExpr interpret(const Code & code_obj)
             frame.push(eq_ret);
             continue;
         }
+		else if(inst == INS::CLOSED_OVER)
+		{
+			jassert(frame._code_obj.is<SavedClosure*>());
+			int idx = frame.get_inst();
+			frame.push(frame.closed_overs[idx]);
+
+		}
+		else if(inst == INS::MAKE_CLOSURE)
+		{
+			int argc = frame.get_inst();
+			std::vector<TExpr> theVarOfClosureNeedSaved;
+
+			for (int i = 0; i < argc; i++)
+			{
+				theVarOfClosureNeedSaved.push_back(frame.pop());
+			}
+			reverse(theVarOfClosureNeedSaved.begin(), theVarOfClosureNeedSaved.end());
+
+			TExpr cobj = frame.pop();
+			jassert(cobj.is<Code*>() );
+
+			SavedClosure * sc = new SavedClosure(*cobj.get<Code*>(), theVarOfClosureNeedSaved);
+			frame.push(sc);
+		}
         else
         {
             char errorInfo[256];

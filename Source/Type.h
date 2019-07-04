@@ -100,7 +100,7 @@ public:
 	{
 	 
 	}
-	SavedClosure(Code& code) : _code(code)
+	SavedClosure(Code& code, std::vector<TExpr> otherClosedOvers) : _code(code), closed_overs(otherClosedOvers)
 	{
 
 	}
